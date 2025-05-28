@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TimesheetDaily extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $table = 'timesheet_dailies';
 
     protected $fillable = [
@@ -26,7 +27,9 @@ class TimesheetDaily extends Model
         'fuel_consumption',
         'deduction_amount',
         'note',
-        'status'
+        'status',
+        'approved_by',
+        'approved_at',
     ];
 
     protected $casts = [
@@ -40,6 +43,8 @@ class TimesheetDaily extends Model
         'odometer_ends' => 'decimal:2',
         'fuel_consumption' => 'decimal:2',
         'deduction_amount' => 'decimal:2',
+        'approved_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     protected $dates = [
@@ -70,6 +75,14 @@ class TimesheetDaily extends Model
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    /**
+     * Get the approver of the timesheet.
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

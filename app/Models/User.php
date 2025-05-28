@@ -7,14 +7,10 @@ use App\Models\Employee;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Collection;
-use BackedEnum;
-use Ramsey\Uuid\UuidInterface;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Role;
-use App\Models\Permission;
-
+// Remove unused imports if they were only for the old role system
+// use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+// use App\Models\Role;
+// use App\Models\Permission;
 
 class User extends Authenticatable
 {
@@ -30,7 +26,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role' // This is correct for the direct column usage
     ];
 
     /**
@@ -51,6 +47,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        // 'role' => RoleEnum::class, // If you create a RoleEnum for type safety
     ];
 
     public function employee()
@@ -58,41 +55,33 @@ class User extends Authenticatable
         return $this->hasOne(Employee::class);
     }
 
-    public function roles(): BelongsToMany
+    /**
+     * Check if the user has a specific role.
+     *
+     * @param string $roleName The name of the role to check.
+     * @return bool
+     */
+    public function hasRole(string $roleName): bool
     {
-        return $this->belongsToMany(Role::class);
+        return $this->role === $roleName;
     }
 
-    public function hasRole(string|array $role): bool
-    {
-        if (is_string($role)) {
-            return $this->roles()->where('name', $role)->exists();
-        }
-        return $this->roles()->whereIn('name', $role)->exists();
-    }
-
+    /**
+     * Check if the user has any of the given roles.
+     *
+     * @param array $roles An array of role names to check.
+     * @return bool
+     */
     public function hasAnyRole(array $roles): bool
     {
-        return $this->roles()->whereIn('name', $roles)->exists();
+        return in_array($this->role, $roles, true);
     }
 
-    public function hasAllRoles(array $roles): bool
+    // Add other role-related helper methods if needed, for example:
+    public function isAdmin(): bool
     {
-        return $this->roles()->whereIn('name', $roles)->count() === count($roles);
+        return $this->hasRole('orionAdmin'); // Assuming 'orionAdmin' is one of your enum values
     }
 
-    public function addRole(Role $role): void
-    {
-        $this->roles()->syncWithoutDetaching($role);
-    }
-
-    public function removeRole(Role $role): void
-    {
-        $this->roles()->detach($role);
-    }
-
-    public function syncRoles(array $roles): void
-    {
-        $this->roles()->sync($roles);
-    }
+    // If you are using Laratrust, remove its trait here. e.g. use LaratrustUserTrait;
 }

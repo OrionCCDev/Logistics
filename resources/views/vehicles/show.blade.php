@@ -173,6 +173,112 @@
             </div>
         </div>
     </div>
+
+    {{-- Fuel Consumption History --}}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fuel Consumption History</h5>
+                </div>
+                <div class="card-body">
+                    {{-- Filter Form --}}
+                    <form method="GET" action="{{ route('vehicles.show', $vehicle) }}" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="date_from">From</label>
+                                    <input type="date" id="date_from" name="date_from" class="form-control"
+                                           value="{{ $date_from ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="date_to">To</label>
+                                    <input type="date" id="date_to" name="date_to" class="form-control"
+                                           value="{{ $date_to ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="period">Period</label>
+                                    <select id="period" name="period" class="form-control">
+                                        <option value="">Select Period</option>
+                                        <option value="this_week" {{ ($period ?? '') == 'this_week' ? 'selected' : '' }}>This Week</option>
+                                        <option value="this_month" {{ ($period ?? '') == 'this_month' ? 'selected' : '' }}>This Month</option>
+                                        <option value="this_year" {{ ($period ?? '') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 align-self-end">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary mr-2">Filter</button>
+                                    <a href="{{ route('vehicles.show', $vehicle) }}" class="btn btn-secondary">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    {{-- End Filter Form --}}
+
+                    @if($fuelConsumptions->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Project</th>
+                                        <th>Odometer Start</th>
+                                        <th>Odometer End</th>
+                                        <th>Distance</th>
+                                        <th>Fuel Consumption</th>
+                                        <th>Method</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($fuelConsumptions as $timesheet)
+                                        <tr>
+                                            <td>{{ $timesheet->date->format('d M Y') }}</td>
+                                            <td>{{ $timesheet->project->name ?? 'N/A' }}</td>
+                                            <td>{{ $timesheet->odometer_start ? number_format($timesheet->odometer_start, 2) . ' km' : 'N/A' }}</td>
+                                            <td>{{ $timesheet->odometer_ends ? number_format($timesheet->odometer_ends, 2) . ' km' : 'N/A' }}</td>
+                                            <td>
+                                                @if($timesheet->odometer_start && $timesheet->odometer_ends)
+                                                    {{ number_format($timesheet->odometer_ends - $timesheet->odometer_start, 2) }} km
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                            <td>{{ number_format($timesheet->fuel_consumption, 2) }}</td>
+                                            <td>{{ ucfirst(str_replace('_', ' ', $timesheet->fuel_consumption_status)) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">No fuel consumption data found for the selected period.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- End Fuel Consumption History --}}
+
+    {{-- Full Timesheet History (Livewire) --}}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Full Timesheet History</h5>
+                </div>
+                <div class="card-body">
+                    @livewire('vehicle-timesheet-table', ['vehicle' => $vehicle])
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- End Full Timesheet History --}}
+
 </div>
 
 <!-- Create Timesheet Modal -->
@@ -185,127 +291,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="{{ route('timesheets.storeForVehicle', $vehicle) }}" method="POST">
-                @csrf
-                <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
-                <input type="hidden" name="user_id" value="{{ Auth::id() }}">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="date">Date</label>
-                                <input type="date" class="form-control" id="date" name="date" required value="{{ old('date') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            @if($vehicle->projectVehicles->count() > 0)
-                                <div class="form-group">
-                                    <label for="project_id">Project</label>
-                                    <select class="form-control" id="project_id" name="project_id">
-                                        <option value="">Select Project (Optional)</option>
-                                        @foreach($vehicle->projectVehicles as $projectVehicle)
-                                            <option value="{{ $projectVehicle->project->id }}" {{ old('project_id') == $projectVehicle->project->id ? 'selected' : '' }}>
-                                                {{ $projectVehicle->project->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @else
-                                <div class="form-group">
-                                    <label for="project_id">Project</label>
-                                    <select class="form-control" id="project_id" name="project_id" disabled>
-                                        <option value="">No projects assigned to this vehicle</option>
-                                    </select>
-                                    <small class="form-text text-muted">Assign this vehicle to projects to select one here.</small>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="working_hours">Working Hours (Manual)</label>
-                                <input type="number" step="0.01" class="form-control" id="working_hours" name="working_hours" value="{{ old('working_hours') }}" placeholder="e.g., 8.5" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="working_start_hour">Work Start Time</label>
-                                <input type="datetime-local" class="form-control" id="working_start_hour" name="working_start_hour" value="{{ old('working_start_hour') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="working_end_hour">Work End Time</label>
-                                <input type="datetime-local" class="form-control" id="working_end_hour" name="working_end_hour" value="{{ old('working_end_hour') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="break_start_at">Break Start Time</label>
-                                <input type="datetime-local" class="form-control" id="break_start_at" name="break_start_at" value="{{ old('break_start_at') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="break_ends_at">Break End Time</label>
-                                <input type="datetime-local" class="form-control" id="break_ends_at" name="break_ends_at" value="{{ old('break_ends_at') }}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="odometer_start">Odometer Start</label>
-                                <input type="number" step="0.01" class="form-control" id="odometer_start" name="odometer_start" value="{{ old('odometer_start') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="odometer_ends">Odometer End</label>
-                                <input type="number" step="0.01" class="form-control" id="odometer_ends" name="odometer_ends" value="{{ old('odometer_ends') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="fuel_consumption_status">Fuel Consumption Calc</label>
-                                <select class="form-control" id="fuel_consumption_status" name="fuel_consumption_status">
-                                    <option value="">Select Method</option>
-                                    <option value="by_hours" {{ old('fuel_consumption_status') == 'by_hours' ? 'selected' : '' }}>By Hours</option>
-                                    <option value="by_odometer" {{ old('fuel_consumption_status') == 'by_odometer' ? 'selected' : '' }}>By Odometer</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label for="fuel_consumption">Fuel Consumption</label>
-                                <input type="number" step="0.01" class="form-control" id="fuel_consumption" name="fuel_consumption" value="{{ old('fuel_consumption') }}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="deduction_amount">Deduction Amount</label>
-                                <input type="number" step="0.01" class="form-control" id="deduction_amount" name="deduction_amount" value="{{ old('deduction_amount') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label for="notes">Notes</label>
-                                <textarea class="form-control" id="notes" name="notes" rows="2">{{ old('notes') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Create Timesheet</button>
-                </div>
-            </form>
+            @livewire('create-vehicle-timesheet-form', ['vehicle' => $vehicle])
         </div>
     </div>
 </div>
@@ -343,45 +329,17 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const workingStartHourInput = document.getElementById('working_start_hour');
-        const workingEndHourInput = document.getElementById('working_end_hour');
-        const breakStartAtInput = document.getElementById('break_start_at');
-        const breakEndsAtInput = document.getElementById('break_ends_at');
-        const workingHoursInput = document.getElementById('working_hours');
+        // Remove the old JavaScript calculation logic for working_hours
+        // as it's now handled by the Livewire component.
 
-        function calculateWorkingHours() {
-            const workingStart = workingStartHourInput.value ? new Date(workingStartHourInput.value) : null;
-            const workingEnd = workingEndHourInput.value ? new Date(workingEndHourInput.value) : null;
-            const breakStart = breakStartAtInput.value ? new Date(breakStartAtInput.value) : null;
-            const breakEnd = breakEndsAtInput.value ? new Date(breakEndsAtInput.value) : null;
-
-            if (workingStart && workingEnd) {
-                let workDurationMs = workingEnd - workingStart;
-
-                if (breakStart && breakEnd && breakStart < breakEnd && breakStart > workingStart && breakEnd < workingEnd) {
-                    const breakDurationMs = breakEnd - breakStart;
-                    workDurationMs -= breakDurationMs;
-                }
-
-                if (workDurationMs > 0) {
-                    const hours = workDurationMs / (1000 * 60 * 60);
-                    workingHoursInput.value = hours.toFixed(2);
-                } else {
-                    workingHoursInput.value = '';
-                }
-            } else {
-                workingHoursInput.value = '';
-            }
-        }
-
-        [workingStartHourInput, workingEndHourInput, breakStartAtInput, breakEndsAtInput].forEach(input => {
-            if (input) {
-                input.addEventListener('change', calculateWorkingHours);
-            }
+        // Optional: Listen for Livewire event to close modal or refresh parts of the page
+        Livewire.on('timesheetCreated', () => {
+            // Close the modal
+            $('#createTimesheetModal').modal('hide');
+            // Optionally, you might want to refresh the Livewire timesheet table if it's on this page
+            // Livewire.dispatch('refreshVehicleTimesheetTable'); // Assuming your table component listens for this
+            // Or show a success message using a toast library if you have one
         });
-
-        // Initial calculation on page load if values are pre-filled (e.g., from old input)
-        calculateWorkingHours();
     });
 </script>
 @endpush

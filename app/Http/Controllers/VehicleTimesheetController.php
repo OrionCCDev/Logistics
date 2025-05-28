@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log; // Add Log facade
 
 class VehicleTimesheetController extends Controller // Renamed class
 {
@@ -51,22 +52,49 @@ class VehicleTimesheetController extends Controller // Renamed class
         $dataToCreate['vehicle_id'] = $vehicle->id; // Explicitly set vehicle_id
         $dataToCreate['status'] = 'draft'; // Default status
 
-        // Auto-calculate working_hours if not provided
+        // Auto-calculate working_hours if not provided by the form (e.g. if the JS calculation is bypassed or field not submitted)
         if (!$request->filled('working_hours') && !empty($validatedData['working_start_hour']) && !empty($validatedData['working_end_hour'])) {
             $workStart = Carbon::parse($validatedData['working_start_hour']);
             $workEnd = Carbon::parse($validatedData['working_end_hour']);
-            $grossWorkMinutes = $workEnd->diffInMinutes($workStart);
+            $grossWorkMinutes = $workEnd->diffInMinutes($workStart); // Absolute difference
 
             $breakMinutes = 0;
             if (!empty($validatedData['break_start_at']) && !empty($validatedData['break_ends_at'])) {
                 $breakStart = Carbon::parse($validatedData['break_start_at']);
                 $breakEnd = Carbon::parse($validatedData['break_ends_at']);
-                if ($breakEnd->gt($breakStart)) { // Ensure break end is after break start
-                    $breakMinutes = $breakEnd->diffInMinutes($breakStart);
+                // Ensure breakEnd is after breakStart; validation should also enforce break is within work period.
+                if ($breakEnd->gt($breakStart)) {
+                    $breakMinutes = $breakEnd->diffInMinutes($breakStart); // Absolute difference
                 }
             }
+
             $netWorkMinutes = $grossWorkMinutes - $breakMinutes;
-            $dataToCreate['working_hours'] = round($netWorkMinutes / 60, 2); // Convert to hours, round to 2 decimal places
+
+            Log::info('Working hours calculation details:', [
+                'vehicle_id' => $vehicle->id,
+                'date' => $validatedData['date'],
+                'working_start_hour' => $validatedData['working_start_hour'],
+                'working_end_hour' => $validatedData['working_end_hour'],
+                'break_start_at' => $validatedData['break_start_at'] ?? null,
+                'break_ends_at' => $validatedData['break_ends_at'] ?? null,
+                'gross_work_minutes' => $grossWorkMinutes,
+                'break_minutes' => $breakMinutes,
+                'net_work_minutes_before_clamp' => $netWorkMinutes,
+            ]);
+
+            if ($netWorkMinutes < 0) {
+                Log::warning('Negative net working minutes calculated. Clamping to 0.', [
+                    'vehicle_id' => $vehicle->id,
+                    'date' => $validatedData['date'],
+                    'calculated_net_minutes' => $netWorkMinutes,
+                    'inputs' => $request->only(['working_start_hour', 'working_end_hour', 'break_start_at', 'break_ends_at'])
+                ]);
+                $netWorkMinutes = 0; // Clamp to 0 if negative
+            }
+            $dataToCreate['working_hours'] = round($netWorkMinutes / 60, 2);
+        } elseif ($request->filled('working_hours')) {
+            // If working_hours is submitted directly, ensure it's a number (validation already checks min:0)
+            $dataToCreate['working_hours'] = (float) $validatedData['working_hours'];
         }
 
         // Rename notes to note if TimesheetDaily model expects 'note'

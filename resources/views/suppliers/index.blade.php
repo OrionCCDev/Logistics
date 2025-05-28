@@ -45,7 +45,7 @@
                             <tr>
                                 <td>
                                     @if($supplier->logo_path)
-                                        <img src="{{ $supplier->logo_path }}" alt="{{ $supplier->name }}" class="rounded-circle" style="height:40px;width:40px;object-fit:cover;">
+                                        <img src="{{ asset($supplier->logo_path) }}" alt="{{ $supplier->name }}" class="rounded-circle" style="height:40px;width:40px;object-fit:cover;" onerror="handleImageError(this, '{{ htmlspecialchars($supplier->name, ENT_QUOTES, 'UTF-8') }}')">
                                     @else
                                         <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="height:40px;width:40px;">
                                             <span class="text-secondary">{{ substr($supplier->name, 0, 1) }}</span>
@@ -164,23 +164,65 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
+console.log("Page script executing: suppliers/index.blade.php");
+
+if (typeof $ === 'undefined') {
+    console.error("jQuery is NOT loaded when this script runs.");
+} else {
+    console.log("jQuery is loaded. Version: " + $.fn.jquery);
+    if (typeof $.fn.modal === 'undefined') {
+        console.error("Bootstrap Modal component is NOT loaded onto jQuery.");
+    } else {
+        console.log("Bootstrap Modal component IS loaded onto jQuery.");
+    }
+}
+
 $(document).ready(function(){
-    $('.view-vehicles-btn').on('click', function() {
+    console.log("Document ready state reached.");
+
+    var viewButtons = $('.view-vehicles-btn');
+    console.log("Found " + viewButtons.length + " elements with class 'view-vehicles-btn'.");
+
+    if (viewButtons.length === 0) {
+        console.warn("No '.view-vehicles-btn' buttons found. Click events will not be attached.");
+    }
+
+    viewButtons.on('click', function() {
+        console.log("'.view-vehicles-btn' clicked.");
         var supplierId = $(this).data('supplier-id');
         var supplierName = $(this).data('supplier-name');
+        console.log("Supplier ID: " + supplierId + ", Supplier Name: " + supplierName);
+
+        if ($('#vehiclesModal').length === 0) {
+            console.error("Modal with ID '#vehiclesModal' NOT FOUND in the DOM.");
+            return;
+        } else {
+            console.log("Modal with ID '#vehiclesModal' IS found in the DOM.");
+        }
+
         $('#modalSupplierName').text(supplierName);
+        console.log("Set modalSupplierName text to: " + supplierName);
+
         $('#vehiclesTableBody').html('<tr><td colspan="4" class="text-center">Loading vehicles...</td></tr>');
-        $('#vehiclesModal').modal('show');
+        console.log("Set vehiclesTableBody to loading state.");
+
+        try {
+            console.log("Attempting to show modal: $('#vehiclesModal').modal('show')");
+            $('#vehiclesModal').modal('show');
+        } catch (e) {
+            console.error("Error when trying to show modal: ", e);
+        }
 
         $.ajax({
             url: '/suppliers/' + supplierId + '/get-vehicles',
             type: 'GET',
             dataType: 'json',
             success: function(response) {
+                console.log("AJAX success. Response: ", response);
                 var vehiclesTableBody = $('#vehiclesTableBody');
-                vehiclesTableBody.empty(); // Clear previous data
+                vehiclesTableBody.empty();
                 if(response.length > 0){
                     var badgeClasses = ['badge-primary', 'badge-secondary', 'badge-success', 'badge-danger', 'badge-warning', 'badge-info', 'badge-dark'];
                     $.each(response, function(index, vehicle){
@@ -202,8 +244,11 @@ $(document).ready(function(){
                 } else {
                     vehiclesTableBody.html('<tr><td colspan="4" class="text-center">No vehicles found for this supplier.</td></tr>');
                 }
+                console.log("Vehicles table populated.");
             },
             error: function(xhr, status, error) {
+                console.error("AJAX error. Status: " + status + ", Error: " + error);
+                console.error("Response Text: ", xhr.responseText);
                 var errorMessage = '<tr><td colspan="4" class="text-center">Error loading vehicles. ';
                 if (xhr.responseText) {
                     try {
@@ -212,20 +257,41 @@ $(document).ready(function(){
                             errorMessage += 'Message: ' + responseJson.message;
                         }
                     } catch (e) {
-                        // Not a JSON response, display a snippet of the text
                         errorMessage += 'Details: <pre>' + xhr.responseText.substring(0, 200) + '...</pre>';
                     }
                 }
                 errorMessage += '</td></tr>';
                 $('#vehiclesTableBody').html(errorMessage);
-                console.error("Error: ", error, "Status: ", status);
-                console.error("Response Text: ", xhr.responseText);
             }
         });
     });
+
+    console.log("Click handler for '.view-vehicles-btn' attached.");
 });
+
+function handleImageError(imgElement, supplierName) {
+    console.log("handleImageError called for supplier: " + supplierName);
+    const fallbackDiv = document.createElement('div');
+    fallbackDiv.className = 'rounded-circle bg-light d-flex align-items-center justify-content-center';
+    fallbackDiv.style.height = '40px';
+    fallbackDiv.style.width = '40px';
+
+    const span = document.createElement('span');
+    span.className = 'text-secondary';
+    if (supplierName && typeof supplierName === 'string' && supplierName.trim().length > 0) {
+        span.textContent = supplierName.trim().substring(0, 1).toUpperCase();
+    } else {
+        span.textContent = '';
+    }
+    fallbackDiv.appendChild(span);
+
+    if (imgElement.parentNode) {
+        imgElement.parentNode.replaceChild(fallbackDiv, imgElement);
+    }
+}
+console.log("End of page script: suppliers/index.blade.php");
 </script>
-@endsection
+@endpush
 
 @section('page_actions')
 <div class="btn-group btn-group-sm btn-group-rounded mb-15 mr-15" role="group">

@@ -55,4 +55,9 @@ class Vehicle extends Model
     {
         return $this->belongsToMany(Invoice::class, 'invoice_vehicle');
     }
+
+    public function timesheetDailies()
+    {
+        return $this->hasMany(TimesheetDaily::class)->orderBy('date', 'desc');
+    }
 }

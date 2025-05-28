@@ -37,6 +37,7 @@
 
     <!-- Vite CSS and JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 
     <!-- Page Specific Styles -->
     @yield('head_styles')
@@ -767,9 +768,6 @@
     }
 }
 </style>
-
-    <!-- Livewire Styles -->
-    @livewireStyles
 </head>
 
 <body>
@@ -846,7 +844,7 @@
                     </li>
                     @endif
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('analytics.index') }}" class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}">
                             <i class="fas fa-chart-bar"></i>
                             <span>Analytics</span>
                         </a>
@@ -996,7 +994,7 @@
                     </li>
                     @endif
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('analytics.index') }}" class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}">
                             <i class="fas fa-chart-bar"></i>
                             <span>Analytics</span>
                         </a>
@@ -1305,60 +1303,10 @@
         });
     </script>
     @endpush
-    @yield('scripts')
-    @yield('forceScripts')
-    @stack('scripts')
+    {{-- End Page Specific Scripts section --}}
 
-    <!-- Toastr Scripts -->
-    @if(session('toast_success'))
-    <script>
-        $(document).ready(function() {
-            if (typeof showSuccessToast === 'function') {
-                showSuccessToast("{{ session('toast_success') }}");
-            } else {
-                console.warn('showSuccessToast function not found.');
-            }
-        });
-    </script>
-    @endif
-
-    @if(session('toast_error'))
-    <script>
-        $(document).ready(function() {
-            if (typeof showErrorToast === 'function') {
-                showErrorToast("{{ session('toast_error') }}");
-            } else {
-                console.warn('showErrorToast function not found.');
-            }
-        });
-    </script>
-    @endif
-
-    @if(session('toast_warning'))
-    <script>
-        $(document).ready(function() {
-            if (typeof showWarningToast === 'function') {
-                showWarningToast("{{ session('toast_warning') }}");
-            } else {
-                console.warn('showWarningToast function not found.');
-            }
-        });
-    </script>
-    @endif
-
-    @if(session('toast_info'))
-    <script>
-        $(document).ready(function() {
-            if (typeof showInfoToast === 'function') {
-                showInfoToast("{{ session('toast_info') }}");
-            } else {
-                console.warn('showInfoToast function not found.');
-            }
-        });
-    </script>
-    @endif
-
-    <!-- Livewire Scripts -->
+    @stack('modals')
+    @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     @livewireScripts
 </body>
 

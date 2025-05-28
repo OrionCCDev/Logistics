@@ -68,7 +68,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="text-center">
-                                        <img id="logo-preview" style="max-width: 200px; max-height: 200px;"
+                                        <div id="logo-placeholder-container" class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; border: 1px solid #ddd; margin: auto; display: none;">
+                                            <span id="logo-placeholder-text" class="text-secondary display-4"></span>
+                                        </div>
+                                        <img id="logo-preview" style="max-width: 200px; max-height: 200px; display: block;"
                                              src="{{ $supplier->logo_path ? asset($supplier->logo_path) : asset('dashAssets/dist/img/img-thumb.jpg') }}"
                                              class="img-fluid img-thumbnail" alt="Logo Preview">
                                     </div>
@@ -344,69 +347,147 @@
 @endsection
 @section('scripts')
 <script>
-    // Function to handle file previews
-    function handleFilePreview(input, previewId, placeholderId, iframeId = null) {
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const fileType = file.type;
+$(document).ready(function() {
+    // Initialize Select2 for category dropdown
+    $('#category_id').select2({
+        placeholder: "Select a category",
+        allowClear: true,
+        // theme: "bootstrap4" // Optional: if you want Bootstrap 4 styling
+    });
 
-            // For images
-            if (fileType.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $(`#${previewId}`).attr('src', e.target.result);
-                }
-                reader.readAsDataURL(file);
+    // Function to update logo placeholder/preview
+    function updateLogoDisplay() {
+        var companyName = $('#name').val();
+        var logoPreview = $('#logo-preview');
+        var logoPlaceholderContainer = $('#logo-placeholder-container');
+        var logoPlaceholderText = $('#logo-placeholder-text');
+        var fileInput = $('#logo');
+        var existingLogoPath = "{{ $supplier->logo_path ? asset($supplier->logo_path) : '' }}";
+        var defaultThumb = "{{ asset('dashAssets/dist/img/img-thumb.jpg') }}";
+
+        if (fileInput[0].files && fileInput[0].files[0]) {
+            // A new file is selected for upload
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                logoPreview.attr('src', event.target.result).show();
+                logoPlaceholderContainer.hide();
             }
-            // For PDFs and documents
-            else if (fileType === 'application/pdf' || fileType.includes('document')) {
-                const url = URL.createObjectURL(file);
-                $(`#${placeholderId}`).addClass('d-none');
-                $(`#${iframeId}`).removeClass('d-none').attr('src', url);
-            }
+            reader.readAsDataURL(fileInput[0].files[0]);
+        } else if (existingLogoPath) {
+            // No new file, but an existing logo exists
+            logoPreview.attr('src', existingLogoPath).show();
+            logoPlaceholderContainer.hide();
+        } else if (companyName && companyName.trim() !== "") {
+            // No new file, no existing logo, but company name is present
+            logoPlaceholderText.text(companyName.trim().charAt(0).toUpperCase());
+            logoPreview.hide();
+            logoPlaceholderContainer.css('display', 'flex');
         } else {
-            // Reset preview if no file selected
-            if (iframeId) {
-                $(`#${placeholderId}`).removeClass('d-none');
-                $(`#${iframeId}`).addClass('d-none').attr('src', '');
-            } else {
-                $(`#${previewId}`).attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
-            }
+            // No new file, no existing logo, no company name - show default thumbnail
+            logoPreview.attr('src', defaultThumb).show();
+            logoPlaceholderContainer.hide();
         }
     }
 
-    // Handle logo preview
-    $('#logo').on('change', function() {
-        handleFilePreview(this, 'logo-preview');
+    // Handle logo file input change
+    $('#logo').change(function() {
+        updateLogoDisplay(); // This will handle showing the new preview
     });
 
-    // Handle trade license preview
-    $('#trade_license').on('change', function() {
-        handleFilePreview(this, null, 'trade_license-placeholder', 'trade_license-iframe');
-    });
-
-    // Handle VAT certificate preview
-    $('#vat_certificate').on('change', function() {
-        handleFilePreview(this, null, 'vat_certificate-placeholder', 'vat_certificate-iframe');
-    });
-
-    // Handle statement preview
-    $('#statement').on('change', function() {
-        handleFilePreview(this, null, 'statement-placeholder', 'statement-iframe');
-    });
-
-    // Handle file input clear
-    $('.fileinput-exists[data-dismiss="fileinput"]').on('click', function() {
-        const input = $(this).closest('.fileinput').find('input[type="file"]');
-        const inputId = input.attr('id');
-
-        if (inputId === 'logo') {
-            $('#logo-preview').attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
-        } else {
-            $(`#${inputId}-placeholder`).removeClass('d-none');
-            $(`#${inputId}-iframe`).addClass('d-none').attr('src', '');
+    // Handle company name input change
+    $('#name').on('input', function() {
+        // Update display only if no file is selected and no existing logo path
+        // Otherwise, file preview or existing logo takes precedence
+        if (!($('#logo')[0].files && $('#logo')[0].files[0]) && !"{{ $supplier->logo_path }}") {
+            updateLogoDisplay();
         }
     });
+
+    // Handle fileinput remove (jasny-bootstrap specific)
+    // This covers clicking the 'Remove' button for the logo
+    $('.fileinput[data-provides="fileinput"]').on('clear.bs.fileinput', function () {
+        // When logo is cleared, decide what to show based on company name
+        // We need to reset the src of logo-preview to avoid it showing old blob url
+        var defaultThumb = "{{ asset('dashAssets/dist/img/img-thumb.jpg') }}";
+        $('#logo-preview').attr('src', defaultThumb); // Reset to placeholder or default
+        // Then call updateLogoDisplay to correctly show text or thumb
+        updateLogoDisplay();
+    });
+
+    // Initial call to set the correct state on page load
+    updateLogoDisplay();
+
+    // File preview for PDF/DOC files (existing logic)
+    function setupFilePreview(inputId, previewId, placeholderId, iframeId, currentPath) {
+        const inputElement = $('#' + inputId);
+        const previewContainer = $('#' + previewId);
+        const placeholder = $('#' + placeholderId);
+        const iframe = $('#' + iframeId);
+
+        function displayFilePreview(file) {
+            if (file.type === "application/pdf" || file.type.startsWith("application/msword") || file.type.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml")) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    iframe.attr('src', event.target.result).removeClass('d-none');
+                    placeholder.addClass('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                placeholder.html('<p class="mt-2">Preview not available for this file type.</p>').removeClass('d-none');
+                iframe.addClass('d-none');
+            }
+        }
+
+        if (currentPath) {
+            // If there's an existing file, attempt to show its name or a link.
+            // For simplicity, the original code showed view/download buttons; we can keep that behavior.
+            // The placeholder div already contains the logic for showing existing file links.
+            // So, if currentPath is set, the initial state is handled by the Blade template.
+            // We only need to handle changes.
+        } else {
+             placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
+             iframe.addClass('d-none');
+        }
+
+        inputElement.change(function() {
+            const file = this.files[0];
+            if (file) {
+                displayFilePreview(file);
+            } else {
+                // If file is cleared via input, reset to initial state (considering currentPath)
+                iframe.addClass('d-none').attr('src', '');
+                if (!currentPath) {
+                    placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
+                } else {
+                    // If there was a current path, clearing the input means we revert to showing that info (handled by Blade or needing specific JS to re-render that part)
+                    // For now, we'll assume the placeholder logic in Blade for currentPath is sufficient if not re-rendering with JS.
+                     // To ensure the placeholder with links shows up if a *new* file is selected then *removed*:
+                    if ($('#' + placeholderId + ' a').length === 0) { // Check if links are not there
+                         placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
+                    }
+                }
+            }
+        });
+
+        // Handle fileinput plugin's clear event for these document inputs
+        inputElement.closest('.fileinput').on('clear.bs.fileinput', function() {
+            iframe.addClass('d-none').attr('src', '');
+            // Check if the original placeholder (with potential links) should be shown
+            var initialPlaceholderContent = $('<div>').html($('#' + placeholderId).html()); // Get a copy
+            if (currentPath) {
+                // If there was an existing file, the placeholder already has the links.
+                // Just ensure it's visible and iframe is hidden.
+                placeholder.removeClass('d-none');
+            } else {
+                placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
+            }
+        });
+    }
+
+    setupFilePreview('trade_license', 'trade_license-preview', 'trade_license-placeholder', 'trade_license-iframe', "{{ $supplier->trade_license_path }}");
+    setupFilePreview('vat_certificate', 'vat_certificate-preview', 'vat_certificate-placeholder', 'vat_certificate-iframe', "{{ $supplier->vat_certificate_path }}");
+    setupFilePreview('statement', 'statement-preview', 'statement-placeholder', 'statement-iframe', "{{ $supplier->statement_path }}");
+});
 </script>
 
 <style>

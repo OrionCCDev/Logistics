@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\TimesheetDaily;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class VehicleController extends Controller
 {
@@ -102,10 +103,47 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Vehicle $vehicle)
+    public function show(Request $request, Vehicle $vehicle)
     {
         $vehicle->load(['projectVehicles.project']);
-        return view('vehicles.show', compact('vehicle'));
+
+        $fuelConsumptionQuery = $vehicle->timesheetDailies()
+            ->whereNotNull('fuel_consumption')
+            ->with('project')
+            ->orderBy('date', 'desc');
+
+        $date_from = $request->input('date_from');
+        $date_to = $request->input('date_to');
+        $period = $request->input('period');
+
+        if ($period) {
+            switch ($period) {
+                case 'this_week':
+                    $date_from = Carbon::now()->startOfWeek()->toDateString();
+                    $date_to = Carbon::now()->endOfWeek()->toDateString();
+                    break;
+                case 'this_month':
+                    $date_from = Carbon::now()->startOfMonth()->toDateString();
+                    $date_to = Carbon::now()->endOfMonth()->toDateString();
+                    break;
+                case 'this_year':
+                    $date_from = Carbon::now()->startOfYear()->toDateString();
+                    $date_to = Carbon::now()->endOfYear()->toDateString();
+                    break;
+            }
+        }
+
+        if ($date_from && $date_to) {
+            $fuelConsumptionQuery->whereBetween('date', [$date_from, $date_to]);
+        } elseif ($date_from) {
+            $fuelConsumptionQuery->where('date', '>=', $date_from);
+        } elseif ($date_to) {
+            $fuelConsumptionQuery->where('date', '<=', $date_to);
+        }
+
+        $fuelConsumptions = $fuelConsumptionQuery->get();
+
+        return view('vehicles.show', compact('vehicle', 'fuelConsumptions', 'date_from', 'date_to', 'period'));
     }
 
     /**
@@ -268,7 +306,7 @@ class VehicleController extends Controller
     {
         $timesheets = TimesheetDaily::where('vehicle_id', $vehicle->id)
             ->where('project_id', $project->id)
-            ->with(['user', 'vehicle', 'project']) // Eager load relationships
+            ->with(['user', 'vehicle', 'project'])
             ->latest('date')
             ->paginate(15);
 

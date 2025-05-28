@@ -34,7 +34,7 @@ return new class extends Migration
 
             // Unique constraint to prevent duplicate entries for the same user and date
             // Only if both are not null
-            $table->unique(['user_id', 'date'], 'timesheet_user_date_unique');
+            
         });
     }
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TimesheetDailyController;
 use App\Http\Controllers\VehicleTimesheetController;
+use App\Http\Controllers\AnalyticsController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -45,6 +46,9 @@ Route::middleware('auth')->group(function () {
             Route::get('vehicles/{vehicle}/project/{project}/timesheet', [VehicleController::class, 'projectTimesheet'])->name('vehicles.project.timesheet');
             // Vehicle specific timesheet creation
             Route::post('vehicles/{vehicle}/timesheets', [VehicleTimesheetController::class, 'storeForVehicle'])->name('timesheets.storeForVehicle');
+
+            // Analytics Route
+            Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
         });
 
 
@@ -62,5 +66,11 @@ Route::middleware('auth')->group(function () {
 //         return view('users.index');
 //     })->middleware(['role:manager', 'permission:manage-users']);
 // });
+
+// Add or ensure these routes for TimesheetDaily exist
+Route::resource('timesheets', TimesheetDailyController::class);
+// If you prefer specific routes:
+// Route::get('/timesheets/{timesheet}/edit', [TimesheetDailyController::class, 'edit'])->name('timesheets.edit');
+// Route::put('/timesheets/{timesheet}', [TimesheetDailyController::class, 'update'])->name('timesheets.update');
 
 require __DIR__.'/auth.php';
