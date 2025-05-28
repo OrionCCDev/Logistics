@@ -1,15 +1,12 @@
 <form wire:submit.prevent="save">
     <div class="modal-body">
         <!-- Validation Summary -->
-        @if(!empty($validation_errors['working_times']) || !empty($validation_errors['break_times']) || !empty($validation_errors['odometer']))
+        @if(!empty($validation_errors['working_times']) || !empty($validation_errors['odometer']))
         <div class="alert alert-warning" role="alert">
             <h6><i class="fa fa-exclamation-triangle"></i> Validation Errors:</h6>
             <ul class="mb-0">
                 @if(!empty($validation_errors['working_times']))
                     <li>{{ $validation_errors['working_times'] }}</li>
-                @endif
-                @if(!empty($validation_errors['break_times']))
-                    <li>{{ $validation_errors['break_times'] }}</li>
                 @endif
                 @if(!empty($validation_errors['odometer']))
                     <li>{{ $validation_errors['odometer'] }}</li>
@@ -54,7 +51,7 @@
             </div>
 
             <!-- TIME INPUTS - These are the key ones for calculation -->
-            <div class="col-md-3 mt-3">
+            <div class="col-md-4 mt-3">
                 <label for="working_start_hour_livewire">Working Start</label>
                 <input type="datetime-local"
                        class="form-control"
@@ -63,7 +60,7 @@
                 @error('working_start_hour') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <div class="col-md-3 mt-3">
+            <div class="col-md-4 mt-3">
                 <label for="working_end_hour_livewire">Working End</label>
                 <input type="datetime-local"
                        class="form-control"
@@ -72,22 +69,14 @@
                 @error('working_end_hour') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <div class="col-md-3 mt-3">
-                <label for="break_start_at_livewire">Break Start</label>
-                <input type="datetime-local"
+            <!-- Added Break Duration Input -->
+            <div class="col-md-4 mt-3">
+                <label for="break_duration_hours_livewire">Break Duration (Hours)</label>
+                <input type="number" step="0.01" min="0" max="24"
                        class="form-control"
-                       id="break_start_at_livewire"
-                       wire:model.live="break_start_at">
-                @error('break_start_at') <span class="text-danger">{{ $message }}</span> @enderror
-            </div>
-
-            <div class="col-md-3 mt-3">
-                <label for="break_ends_at_livewire">Break Ends</label>
-                <input type="datetime-local"
-                       class="form-control"
-                       id="break_ends_at_livewire"
-                       wire:model.live="break_ends_at">
-                @error('break_ends_at') <span class="text-danger">{{ $message }}</span> @enderror
+                       id="break_duration_hours_livewire"
+                       wire:model.live="break_duration_hours">
+                @error('break_duration_hours') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
             <!-- CALCULATED WORKING HOURS -->
@@ -103,7 +92,7 @@
 
                     <!-- Loading indicator -->
                     <div wire:loading
-                         wire:target="working_start_hour,working_end_hour,break_start_at,break_ends_at,calculateWorkingHours,triggerCalculation"
+                         wire:target="working_start_hour,working_end_hour,break_duration_hours,calculateWorkingHours,triggerCalculation"
                          class="position-absolute"
                          style="top: 50%; right: 10px; transform: translateY(-50%);">
                         <span class="spinner-border spinner-border-sm text-primary"

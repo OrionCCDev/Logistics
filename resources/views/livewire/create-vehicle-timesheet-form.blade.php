@@ -42,7 +42,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="working_hours_display" wire:model="working_hours_display" readonly wire:key="working-hours-input">
                             <div class="input-group-append">
-                                <span class="input-group-text" wire:loading wire:target="working_start_hour, working_end_hour, break_start_at, break_ends_at">
+                                <span class="input-group-text" wire:loading wire:target="working_start_hour, working_end_hour, break_duration_hours">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 </span>
                             </div>
@@ -68,16 +68,9 @@
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        <label for="break_start_at">Break Start Time</label>
-                        <input type="datetime-local" class="form-control @error('break_start_at') is-invalid @enderror" id="break_start_at" wire:model.live="break_start_at">
-                        @error('break_start_at') <span class="invalid-feedback">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="break_ends_at">Break End Time</label>
-                        <input type="datetime-local" class="form-control @error('break_ends_at') is-invalid @enderror" id="break_ends_at" wire:model.live="break_ends_at">
-                        @error('break_ends_at') <span class="invalid-feedback">{{ $message }}</span> @enderror
+                        <label for="break_duration_hours">Break Duration (Hours)</label>
+                        <input type="number" step="0.01" min="0" max="24" class="form-control @error('break_duration_hours') is-invalid @enderror" id="break_duration_hours" wire:model.live="break_duration_hours">
+                        @error('break_duration_hours') <span class="invalid-feedback">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>

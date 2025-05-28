@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Project extends Model
 {
@@ -38,6 +39,23 @@ class Project extends Model
     public function vehicles()
     {
         return $this->belongsToMany(Vehicle::class);
+    }
+
+    public function getFuelConsumptionThisMonthAttribute()
+    {
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        return $this->hasManyThrough(
+            TimesheetDaily::class,
+            ProjectVehicle::class,
+            'project_id',
+            'vehicle_id',
+            'id',
+            'vehicle_id'
+        )
+        ->whereBetween('timesheet_dailies.date', [$startOfMonth, $endOfMonth])
+        ->sum('timesheet_dailies.fuel_consumption');
     }
 
 }

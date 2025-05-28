@@ -78,27 +78,42 @@
                         </div>
 
                         {{-- Break Start At --}}
-                        <div class="form-group row mb-3">
-                            <label for="break_start_at" class="col-md-4 col-form-label text-md-right">{{ __('Break Start Time') }}</label>
-                            <div class="col-md-6">
-                                <input id="break_start_at" type="datetime-local" class="form-control @error('break_start_at') is-invalid @enderror" name="break_start_at" value="{{ old('break_start_at', $timesheet->break_start_at ? \Carbon\Carbon::parse($timesheet->break_start_at)->format('Y-m-d\TH:i') : '') }}">
-                                @error('break_start_at')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
+                        {{-- <div class="form-group row mb-3"> --}}
+                        {{--     <label for="break_start_at" class="col-md-4 col-form-label text-md-right">{{ __('Break Start Time') }}</label> --}}
+                        {{--     <div class="col-md-6"> --}}
+                        {{--         <input id="break_start_at" type="datetime-local" class="form-control @error('break_start_at') is-invalid @enderror" name="break_start_at" value="{{ old('break_start_at', $timesheet->break_start_at ? \Carbon\Carbon::parse($timesheet->break_start_at)->format('Y-m-d\TH:i') : '') }}"> --}}
+                        {{--         @error('break_start_at') --}}
+                        {{--             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span> --}}
+                        {{--         @enderror --}}
+                        {{--     </div> --}}
+                        {{-- </div> --}}
 
                         {{-- Break Ends At --}}
+                        {{-- <div class="form-group row mb-3"> --}}
+                        {{--     <label for="break_ends_at" class="col-md-4 col-form-label text-md-right">{{ __('Break End Time') }}</label> --}}
+                        {{--     <div class="col-md-6"> --}}
+                        {{--         <input id="break_ends_at" type="datetime-local" class="form-control @error('break_ends_at') is-invalid @enderror" name="break_ends_at" value="{{ old('break_ends_at', $timesheet->break_ends_at ? \Carbon\Carbon::parse($timesheet->break_ends_at)->format('Y-m-d\TH:i') : '') }}"> --}}
+                        {{--         @error('break_ends_at') --}}
+                        {{--             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span> --}}
+                        {{--         @enderror --}}
+                        {{--     </div> --}}
+                        {{-- </div> --}}
+
+                        {{-- Break Duration --}}
                         <div class="form-group row mb-3">
-                            <label for="break_ends_at" class="col-md-4 col-form-label text-md-right">{{ __('Break End Time') }}</label>
+                            <label for="break_duration_hours" class="col-md-4 col-form-label text-md-right">{{ __('Break Duration (Hours)') }}</label>
                             <div class="col-md-6">
-                                <input id="break_ends_at" type="datetime-local" class="form-control @error('break_ends_at') is-invalid @enderror" name="break_ends_at" value="{{ old('break_ends_at', $timesheet->break_ends_at ? \Carbon\Carbon::parse($timesheet->break_ends_at)->format('Y-m-d\TH:i') : '') }}">
-                                @error('break_ends_at')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                @php
+                                    $breakHours = old('break_duration_hours');
+                                    if ($breakHours === null && isset($timesheet->break_duration_minutes)) {
+                                        $hours = floor($timesheet->break_duration_minutes / 60);
+                                        $minutes = $timesheet->break_duration_minutes % 60;
+                                        $breakHours = sprintf('%d.%02d', $hours, round($minutes / 60 * 100)); // e.g., 1.50 for 1h 30m
+                                    }
+                                @endphp
+                                <input id="break_duration_hours" type="number" step="0.01" class="form-control @error('break_duration_hours') is-invalid @enderror" name="break_duration_hours" value="{{ $breakHours ?? '0.00' }}" placeholder="e.g., 1.5">
+                                @error('break_duration_hours')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>
                         </div>

@@ -31,11 +31,8 @@ class CreateForm extends Component
     #[Rule('required|date_format:Y-m-d\\TH:i')]
     public $working_end_hour = '';
 
-    #[Rule('nullable|date_format:Y-m-d\\TH:i')]
-    public $break_start_at = '';
-
-    #[Rule('nullable|date_format:Y-m-d\\TH:i')]
-    public $break_ends_at = '';
+    #[Rule('nullable|numeric|min:0|max:24')]
+    public $break_duration_hours = '1.0';
 
     public $working_hours = '0.00';
 
@@ -48,7 +45,6 @@ class CreateForm extends Component
     // Validation error messages
     public $validation_errors = [
         'working_times' => '',
-        'break_times' => '',
         'odometer' => ''
     ];
 
@@ -69,10 +65,9 @@ class CreateForm extends Component
         $this->projects = Project::orderBy('name')->get();
         $this->vehicles = Vehicle::orderBy('plate_number')->get();
         $this->date = now()->format('Y-m-d');
-        $this->working_start_hour = now()->format('Y-m-d\\TH:i');
-        $this->working_end_hour = now()->addHours(8)->format('Y-m-d\\TH:i');
-        $this->break_start_at = '';
-        $this->break_ends_at = '';
+        $this->working_start_hour = now()->setHour(6)->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i');
+        $this->working_end_hour = now()->addHours(8)->format('Y-m-d\TH:i');
+        $this->break_duration_hours = '1.0';
         $this->calculateWorkingHours();
     }
 
@@ -85,7 +80,7 @@ class CreateForm extends Component
         $this->clearValidationError($propertyName);
 
         // Only recalculate when time-related properties change
-        if (in_array($propertyName, ['working_start_hour', 'working_end_hour', 'break_start_at', 'break_ends_at'])) {
+        if (in_array($propertyName, ['working_start_hour', 'working_end_hour', 'break_duration_hours'])) {
             $this->validateTimes();
             $this->calculateWorkingHours();
         }
@@ -101,8 +96,8 @@ class CreateForm extends Component
         if (in_array($propertyName, ['working_start_hour', 'working_end_hour'])) {
             $this->validation_errors['working_times'] = '';
         }
-        if (in_array($propertyName, ['break_start_at', 'break_ends_at'])) {
-            $this->validation_errors['break_times'] = '';
+        if ($propertyName === 'break_duration_hours') {
+            // $this->validation_errors['break_times'] = ''; // Or a new error key for duration
         }
         if (in_array($propertyName, ['odometer_start', 'odometer_ends'])) {
             $this->validation_errors['odometer'] = '';
@@ -111,8 +106,6 @@ class CreateForm extends Component
 
     public function validateTimes()
     {
-        $errors = [];
-
         try {
             // Validate working hours
             if (!empty($this->working_start_hour) && !empty($this->working_end_hour)) {
@@ -120,58 +113,17 @@ class CreateForm extends Component
                 $endTime = Carbon::parse($this->working_end_hour);
 
                 if ($endTime->lessThanOrEqualTo($startTime)) {
-                    $errors[] = 'Working end time must be after start time';
                     $this->validation_errors['working_times'] = 'Working end time must be after start time';
-                }
-            }
-
-            // Validate break hours if provided
-            if (!empty($this->break_start_at) && !empty($this->break_ends_at)) {
-                $breakStart = Carbon::parse($this->break_start_at);
-                $breakEnd = Carbon::parse($this->break_ends_at);
-
-                // Check if break end is after break start
-                if ($breakEnd->lessThanOrEqualTo($breakStart)) {
-                    $errors[] = 'Break end time must be after break start time';
-                    $this->validation_errors['break_times'] = 'Break end time must be after break start time';
                     return false;
                 }
-
-                // Check if break times are within working hours
-                if (!empty($this->working_start_hour) && !empty($this->working_end_hour)) {
-                    $workStart = Carbon::parse($this->working_start_hour);
-                    $workEnd = Carbon::parse($this->working_end_hour);
-
-                    if ($breakStart->lessThan($workStart)) {
-                        $errors[] = 'Break start time must be after working start time';
-                        $this->validation_errors['break_times'] = 'Break start time must be after working start time';
-                        return false;
-                    }
-
-                    if ($breakEnd->greaterThan($workEnd)) {
-                        $errors[] = 'Break end time must be before working end time';
-                        $this->validation_errors['break_times'] = 'Break end time must be before working end time';
-                        return false;
-                    }
-                }
             }
+            $this->validation_errors['working_times'] = '';
 
-            // Check if only one break time is provided
-            if ((!empty($this->break_start_at) && empty($this->break_ends_at)) ||
-                (empty($this->break_start_at) && !empty($this->break_ends_at))) {
-                $this->validation_errors['break_times'] = 'Both break start and end times are required if using break time';
-                return false;
-            }
-
-            // Clear break time errors if validation passes
-            if (empty($errors)) {
-                $this->validation_errors['break_times'] = '';
-            }
-
-            return empty($errors);
+            return empty($this->validation_errors['working_times']);
 
         } catch (\Exception $e) {
             Log::error('Time validation error: ' . $e->getMessage());
+            $this->validation_errors['working_times'] = 'Invalid time input.';
             return false;
         }
     }
@@ -214,8 +166,7 @@ class CreateForm extends Component
             Log::info('Starting calculation', [
                 'start' => $this->working_start_hour,
                 'end' => $this->working_end_hour,
-                'break_start' => $this->break_start_at,
-                'break_end' => $this->break_ends_at
+                'break_duration_hours' => $this->break_duration_hours
             ]);
 
             // Reset if no start or end time
@@ -226,14 +177,12 @@ class CreateForm extends Component
             }
 
             // Don't calculate if there are validation errors
-            if (!empty($this->validation_errors['working_times']) ||
-                !empty($this->validation_errors['break_times'])) {
+            if (!empty($this->validation_errors['working_times'])) {
                 $this->working_hours = '0.00';
                 Log::info('Validation errors present, not calculating');
                 return;
             }
 
-            // Parse start and end times using Carbon::parse (more robust)
             $startTime = Carbon::parse($this->working_start_hour);
             $endTime = Carbon::parse($this->working_end_hour);
 
@@ -245,53 +194,33 @@ class CreateForm extends Component
 
             Log::info('Times parsed successfully', [
                 'start_parsed' => $startTime->format('Y-m-d H:i:s'),
-                'end_parsed' => $endTime->format('Y-m-d H:i:s'),
-                'start_timestamp' => $startTime->timestamp,
-                'end_timestamp' => $endTime->timestamp
+                'end_parsed' => $endTime->format('Y-m-d H:i:s')
             ]);
 
-            // Check if this is a valid time range
             if ($endTime->lessThanOrEqualTo($startTime)) {
                 $this->working_hours = '0.00';
                 Log::error('End time is not after start time');
                 return;
             }
 
-            // Calculate total working minutes (ensure positive result)
             $totalMinutes = $startTime->diffInMinutes($endTime);
             Log::info("Total minutes calculated: $totalMinutes");
 
-            // Calculate break time if provided and valid
+            // Calculate break time from break_duration_hours
             $breakMinutes = 0;
-            if (!empty($this->break_start_at) && !empty($this->break_ends_at) &&
-                empty($this->validation_errors['break_times'])) {
-                $breakStart = Carbon::parse($this->break_start_at);
-                $breakEnd = Carbon::parse($this->break_ends_at);
-
-                if ($breakStart && $breakEnd) {
-                    Log::info('Break times parsed', [
-                        'break_start_parsed' => $breakStart->format('Y-m-d H:i:s'),
-                        'break_end_parsed' => $breakEnd->format('Y-m-d H:i:s'),
-                        'break_start_timestamp' => $breakStart->timestamp,
-                        'break_end_timestamp' => $breakEnd->timestamp
-                    ]);
-
-                    if ($breakEnd->greaterThan($breakStart) &&
-                        $breakStart->greaterThanOrEqualTo($startTime) &&
-                        $breakEnd->lessThanOrEqualTo($endTime)) {
-                        $breakMinutes = $breakStart->diffInMinutes($breakEnd);
-                        Log::info("Valid break period, minutes calculated: $breakMinutes");
-                    } else {
-                        Log::info('Break period is invalid or outside working hours');
-                    }
+            if (!empty($this->break_duration_hours) && is_numeric($this->break_duration_hours)) {
+                $breakDurationInHours = (float) $this->break_duration_hours;
+                if ($breakDurationInHours > 0) {
+                    $breakMinutes = round($breakDurationInHours * 60);
+                    Log::info("Break duration in hours: $breakDurationInHours, minutes calculated: $breakMinutes");
                 }
+            } else {
+                Log::info('Break duration is empty or not numeric.');
             }
 
-            // Calculate net working time
             $netMinutes = $totalMinutes - $breakMinutes;
             if ($netMinutes < 0) $netMinutes = 0;
 
-            // Convert to H.MM format (hours.minutes)
             $hours = floor($netMinutes / 60);
             $remainingMinutes = $netMinutes % 60;
             $this->working_hours = sprintf('%d.%02d', $hours, $remainingMinutes);
@@ -325,11 +254,9 @@ class CreateForm extends Component
         Log::info('Raw values:', [
             'working_start_hour' => $this->working_start_hour,
             'working_end_hour' => $this->working_end_hour,
-            'break_start_at' => $this->break_start_at,
-            'break_ends_at' => $this->break_ends_at
+            'break_duration_hours' => $this->break_duration_hours
         ]);
 
-        // Test with simple Carbon parsing
         if ($this->working_start_hour && $this->working_end_hour) {
             $start = Carbon::parse($this->working_start_hour);
             $end = Carbon::parse($this->working_end_hour);
@@ -348,18 +275,23 @@ class CreateForm extends Component
 
     public function save()
     {
-        // Run custom validations before saving
         $timeValidation = $this->validateTimes();
         $odometerValidation = $this->validateOdometer();
 
         if (!$timeValidation || !$odometerValidation) {
-            // Don't save if custom validations fail
             session()->flash('error', 'Please fix the validation errors before saving.');
             return;
         }
 
-        // Run standard Laravel validation
         $this->validate();
+
+        $breakDurationInMinutes = 0;
+        if (!empty($this->break_duration_hours) && is_numeric($this->break_duration_hours)) {
+            $breakDurationInHours = (float) $this->break_duration_hours;
+            if ($breakDurationInHours > 0) {
+                $breakDurationInMinutes = round($breakDurationInHours * 60);
+            }
+        }
 
         TimesheetDaily::create([
             'user_id' => Auth::id(),
@@ -368,8 +300,7 @@ class CreateForm extends Component
             'date' => $this->date,
             'working_start_hour' => Carbon::parse($this->working_start_hour),
             'working_end_hour' => Carbon::parse($this->working_end_hour),
-            'break_start_at' => $this->break_start_at ? Carbon::parse($this->break_start_at) : null,
-            'break_ends_at' => $this->break_ends_at ? Carbon::parse($this->break_ends_at) : null,
+            'break_duration_minutes' => $breakDurationInMinutes,
             'working_hours' => (float) $this->working_hours,
             'odometer_start' => $this->odometer_start,
             'odometer_ends' => $this->odometer_ends,
@@ -388,10 +319,9 @@ class CreateForm extends Component
     {
         $this->resetExcept('projects', 'vehicles');
         $this->date = now()->format('Y-m-d');
-        $this->working_start_hour = now()->format('Y-m-d\\TH:i');
-        $this->working_end_hour = now()->addHours(8)->format('Y-m-d\\TH:i');
-        $this->break_start_at = '';
-        $this->break_ends_at = '';
+        $this->working_start_hour = now()->setHour(6)->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i');
+        $this->working_end_hour = now()->addHours(8)->format('Y-m-d\TH:i');
+        $this->break_duration_hours = '1.0';
         $this->working_hours = '0.00';
         $this->odometer_start = '0';
         $this->odometer_ends = '0';
@@ -400,10 +330,8 @@ class CreateForm extends Component
         $this->deduction_amount = '0';
         $this->note = '';
 
-        // Reset validation errors
         $this->validation_errors = [
             'working_times' => '',
-            'break_times' => '',
             'odometer' => ''
         ];
 

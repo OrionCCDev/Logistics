@@ -87,16 +87,16 @@
                 <hr>
                 <div class="row">
                     <!-- Working Start Hour -->
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         <label for="working_start_hour">Work Start Time</label>
-                        <input type="time" class="form-control @error('working_start_hour') is-invalid @enderror" id="working_start_hour" name="working_start_hour" value="{{ old('working_start_hour') }}">
+                        <input type="time" class="form-control @error('working_start_hour') is-invalid @enderror" id="working_start_hour" name="working_start_hour" value="{{ old('working_start_hour', '06:00') }}">
                         @error('working_start_hour')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <!-- Working End Hour -->
-                    <div class="col-md-3 form-group">
+                    <div class="col-md-4 form-group">
                         <label for="working_end_hour">Work End Time</label>
                         <input type="time" class="form-control @error('working_end_hour') is-invalid @enderror" id="working_end_hour" name="working_end_hour" value="{{ old('working_end_hour') }}">
                         @error('working_end_hour')
@@ -104,20 +104,11 @@
                         @enderror
                     </div>
 
-                    <!-- Break Start At -->
-                    <div class="col-md-3 form-group">
-                        <label for="break_start_at">Break Start Time</label>
-                        <input type="time" class="form-control @error('break_start_at') is-invalid @enderror" id="break_start_at" name="break_start_at" value="{{ old('break_start_at') }}">
-                        @error('break_start_at')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Break Ends At -->
-                    <div class="col-md-3 form-group">
-                        <label for="break_ends_at">Break End Time</label>
-                        <input type="time" class="form-control @error('break_ends_at') is-invalid @enderror" id="break_ends_at" name="break_ends_at" value="{{ old('break_ends_at') }}">
-                        @error('break_ends_at')
+                    <!-- Break Duration -->
+                    <div class="col-md-4 form-group">
+                        <label for="break_duration_hours">Break Duration (Hours)</label>
+                        <input type="number" step="0.01" class="form-control @error('break_duration_hours') is-invalid @enderror" id="break_duration_hours" name="break_duration_hours" value="{{ old('break_duration_hours', '1.0') }}" placeholder="e.g., 1.5">
+                        @error('break_duration_hours')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -246,12 +237,11 @@
         function calculateWorkingHours() {
             let startTime = $('#working_start_hour').val();
             let endTime = $('#working_end_hour').val();
-            let breakStartTime = $('#break_start_at').val();
-            let breakEndTime = $('#break_ends_at').val();
+            let breakDurationHours = parseFloat($('#break_duration_hours').val());
 
             if (startTime && endTime) {
-                let start = new Date(\`1970-01-01T\${startTime}:00\`);
-                let end = new Date(\`1970-01-01T\${endTime}:00\`);
+                let start = new Date(`1970-01-01T${startTime}:00`);
+                let end = new Date(`1970-01-01T${endTime}:00`);
 
                 let diffMs = end - start;
                 if (diffMs < 0) { // Handle overnight case or error
@@ -261,14 +251,8 @@
 
                 let workHours = diffMs / (1000 * 60 * 60);
 
-                if (breakStartTime && breakEndTime) {
-                    let breakStart = new Date(\`1970-01-01T\${breakStartTime}:00\`);
-                    let breakEnd = new Date(\`1970-01-01T\${breakEndTime}:00\`);
-                    let breakDiffMs = breakEnd - breakStart;
-
-                    if (breakDiffMs > 0) {
-                        workHours -= breakDiffMs / (1000 * 60 * 60);
-                    }
+                if (!isNaN(breakDurationHours) && breakDurationHours > 0) {
+                    workHours -= breakDurationHours;
                 }
 
                 $('#working_hours').val(workHours > 0 ? workHours.toFixed(2) : '0.00');
@@ -278,7 +262,7 @@
             }
         }
 
-        $('#working_start_hour, #working_end_hour, #break_start_at, #break_ends_at').on('change', calculateWorkingHours);
+        $('#working_start_hour, #working_end_hour, #break_duration_hours').on('change', calculateWorkingHours);
 
         // Auto-calculation for Odometer driven KM
         function calculateOdometerKm(){

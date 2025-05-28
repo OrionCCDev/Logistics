@@ -48,8 +48,7 @@ class TimesheetDailyController extends Controller
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'working_start_hour' => 'nullable|date',
             'working_end_hour' => 'nullable|date|after_or_equal:working_start_hour',
-            'break_start_at' => 'nullable|date',
-            'break_ends_at' => 'nullable|date|after_or_equal:break_start_at',
+            'break_duration_hours' => 'nullable|numeric|min:0|max:24',
             'working_hours' => 'nullable|numeric|min:0',
             'odometer_start' => 'nullable|numeric|min:0',
             'odometer_ends' => 'nullable|numeric|min:0|gte:odometer_start',
@@ -60,15 +59,27 @@ class TimesheetDailyController extends Controller
             'fuel_consumption_status' => 'nullable|in:by_hours,by_odometer',
         ]);
 
-        if (empty($validatedData['user_id'])) {
-            $validatedData['user_id'] = Auth::id();
+        $dataToSave = $validatedData;
+
+        if (empty($dataToSave['user_id'])) {
+            $dataToSave['user_id'] = Auth::id();
         }
 
-        if (empty($validatedData['status'])) {
-            $validatedData['status'] = 'draft';
+        if (empty($dataToSave['status'])) {
+            $dataToSave['status'] = 'draft';
         }
 
-        TimesheetDaily::create($validatedData);
+        if (isset($dataToSave['break_duration_hours']) && is_numeric($dataToSave['break_duration_hours'])) {
+            $dataToSave['break_duration_minutes'] = round((float)$dataToSave['break_duration_hours'] * 60);
+        } else {
+            $dataToSave['break_duration_minutes'] = null;
+        }
+        unset($dataToSave['break_duration_hours']);
+
+        unset($dataToSave['break_start_at']);
+        unset($dataToSave['break_ends_at']);
+
+        TimesheetDaily::create($dataToSave);
 
         return redirect()->route('timesheet.index')->with('success', 'Timesheet entry created successfully.');
     }
@@ -108,8 +119,7 @@ class TimesheetDailyController extends Controller
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'working_start_hour' => 'nullable|date',
             'working_end_hour' => 'nullable|date|after_or_equal:working_start_hour',
-            'break_start_at' => 'nullable|date',
-            'break_ends_at' => 'nullable|date|after_or_equal:break_start_at',
+            'break_duration_hours' => 'nullable|numeric|min:0|max:24',
             'working_hours' => 'nullable|numeric|min:0',
             'odometer_start' => 'nullable|numeric|min:0',
             'odometer_ends' => 'nullable|numeric|min:0|gte:odometer_start',
@@ -120,17 +130,29 @@ class TimesheetDailyController extends Controller
             'fuel_consumption_status' => 'nullable|in:by_hours,by_odometer',
         ]);
 
-        if (empty($validatedData['user_id'])) {
-            $validatedData['user_id'] = Auth::id();
+        $dataToUpdate = $validatedData;
+
+        if (empty($dataToUpdate['user_id'])) {
+            $dataToUpdate['user_id'] = Auth::id();
         }
 
-        if (empty($validatedData['status']) && !$request->user()->can('manage timesheets')) {
-            unset($validatedData['status']);
-        } elseif (empty($validatedData['status'])) {
-            $validatedData['status'] = $timesheet->status;
+        if (empty($dataToUpdate['status']) && !$request->user()->can('manage timesheets')) {
+            unset($dataToUpdate['status']);
+        } elseif (empty($dataToUpdate['status'])) {
+            $dataToUpdate['status'] = $timesheet->status;
         }
 
-        $timesheet->update($validatedData);
+        if (isset($dataToUpdate['break_duration_hours']) && is_numeric($dataToUpdate['break_duration_hours'])) {
+            $dataToUpdate['break_duration_minutes'] = round((float)$dataToUpdate['break_duration_hours'] * 60);
+        } else {
+            $dataToUpdate['break_duration_minutes'] = null;
+        }
+        unset($dataToUpdate['break_duration_hours']);
+
+        unset($dataToUpdate['break_start_at']);
+        unset($dataToUpdate['break_ends_at']);
+
+        $timesheet->update($dataToUpdate);
 
         return redirect()->route('timesheet.index')->with('success', 'Timesheet entry updated successfully.');
     }

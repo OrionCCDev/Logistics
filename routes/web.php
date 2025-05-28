@@ -14,6 +14,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TimesheetDailyController;
 use App\Http\Controllers\VehicleTimesheetController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ProjectVehicleController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -38,6 +39,9 @@ Route::middleware('auth')->group(function () {
                 'vehicles' => VehicleController::class,
                 'invoices' => InvoiceController::class,
             ]);
+            Route::resource('project_vehicles', ProjectVehicleController::class);
+            Route::get('projects/{project}/fuel-consumption-summary', [ProjectController::class, 'fuelConsumptionSummary'])->name('projects.fuel_consumption_summary');
+            Route::get('projects/{project}/fuel-consumption-summary/print', [ProjectController::class, 'printFuelConsumptionSummary'])->name('projects.print_fuel_consumption_summary');
             Route::get('suppliers/{supplier}/vehicles', [InvoiceController::class, 'getSupplierVehicles'])->name('suppliers.vehicles');
             Route::get('suppliers/{supplier}/get-vehicles', [SupplierController::class, 'getSupplierVehicles'])->name('suppliers.get_vehicles');
             Route::resource('timesheet', TimesheetDailyController::class)->parameters([

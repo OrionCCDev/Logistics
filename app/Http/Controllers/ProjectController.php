@@ -6,6 +6,9 @@ use App\Models\Project;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\TimesheetDaily;
+use App\Models\ProjectVehicle;
 
 class ProjectController extends Controller
 {
@@ -120,5 +123,37 @@ class ProjectController extends Controller
             DB::rollBack();
             return back()->with('error', 'Error deleting project: ' . $e->getMessage());
         }
+    }
+
+    public function fuelConsumptionSummary(Project $project)
+    {
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $timesheets = TimesheetDaily::where('project_id', $project->id)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->with('vehicle')
+            ->get();
+
+        $totalFuelConsumption = $timesheets->sum('fuel_consumption');
+        $totalWorkingHours = $timesheets->sum('working_hours');
+
+        return view('projects.fuel_consumption_summary', compact('project', 'timesheets', 'totalFuelConsumption', 'totalWorkingHours'));
+    }
+
+    public function printFuelConsumptionSummary(Project $project)
+    {
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $timesheets = TimesheetDaily::where('project_id', $project->id)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->with('vehicle')
+            ->get();
+
+        $totalFuelConsumption = $timesheets->sum('fuel_consumption');
+        $totalWorkingHours = $timesheets->sum('working_hours');
+
+        return view('projects.fuel_consumption_print', compact('project', 'timesheets', 'totalFuelConsumption', 'totalWorkingHours'));
     }
 }

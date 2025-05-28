@@ -36,8 +36,7 @@ class VehicleTimesheetController extends Controller // Renamed class
             })->ignore(null, 'id')],
             'working_start_hour' => 'required|date_format:Y-m-d\TH:i', // Expecting datetime-local format
             'working_end_hour' => 'required|date_format:Y-m-d\TH:i|after_or_equal:working_start_hour',
-            'break_start_at' => 'nullable|date_format:Y-m-d\TH:i|after_or_equal:working_start_hour|before_or_equal:working_end_hour',
-            'break_ends_at' => 'nullable|date_format:Y-m-d\TH:i|after_or_equal:break_start_at|before_or_equal:working_end_hour',
+            'break_duration_hours' => 'nullable|numeric|min:0|max:24',
             'working_hours' => 'nullable|numeric|min:0',
             'odometer_start' => 'nullable|numeric|min:0',
             'odometer_ends' => 'nullable|numeric|min:0|gte:odometer_start',
@@ -52,21 +51,21 @@ class VehicleTimesheetController extends Controller // Renamed class
         $dataToCreate['vehicle_id'] = $vehicle->id; // Explicitly set vehicle_id
         $dataToCreate['status'] = 'draft'; // Default status
 
+        // Convert break_duration_hours to break_duration_minutes for storage and calculation
+        $breakMinutes = 0;
+        if (isset($dataToCreate['break_duration_hours']) && is_numeric($dataToCreate['break_duration_hours'])) {
+            $breakMinutes = round((float)$dataToCreate['break_duration_hours'] * 60);
+            $dataToCreate['break_duration_minutes'] = $breakMinutes;
+        } else {
+            $dataToCreate['break_duration_minutes'] = null; // Or 0 if your DB column is not nullable
+        }
+        unset($dataToCreate['break_duration_hours']); // Remove the hours version before saving to DB
+
         // Auto-calculate working_hours if not provided by the form (e.g. if the JS calculation is bypassed or field not submitted)
         if (!$request->filled('working_hours') && !empty($validatedData['working_start_hour']) && !empty($validatedData['working_end_hour'])) {
             $workStart = Carbon::parse($validatedData['working_start_hour']);
             $workEnd = Carbon::parse($validatedData['working_end_hour']);
             $grossWorkMinutes = $workEnd->diffInMinutes($workStart); // Absolute difference
-
-            $breakMinutes = 0;
-            if (!empty($validatedData['break_start_at']) && !empty($validatedData['break_ends_at'])) {
-                $breakStart = Carbon::parse($validatedData['break_start_at']);
-                $breakEnd = Carbon::parse($validatedData['break_ends_at']);
-                // Ensure breakEnd is after breakStart; validation should also enforce break is within work period.
-                if ($breakEnd->gt($breakStart)) {
-                    $breakMinutes = $breakEnd->diffInMinutes($breakStart); // Absolute difference
-                }
-            }
 
             $netWorkMinutes = $grossWorkMinutes - $breakMinutes;
 
@@ -75,10 +74,8 @@ class VehicleTimesheetController extends Controller // Renamed class
                 'date' => $validatedData['date'],
                 'working_start_hour' => $validatedData['working_start_hour'],
                 'working_end_hour' => $validatedData['working_end_hour'],
-                'break_start_at' => $validatedData['break_start_at'] ?? null,
-                'break_ends_at' => $validatedData['break_ends_at'] ?? null,
+                'break_duration_minutes_calculated' => $breakMinutes,
                 'gross_work_minutes' => $grossWorkMinutes,
-                'break_minutes' => $breakMinutes,
                 'net_work_minutes_before_clamp' => $netWorkMinutes,
             ]);
 
@@ -87,7 +84,7 @@ class VehicleTimesheetController extends Controller // Renamed class
                     'vehicle_id' => $vehicle->id,
                     'date' => $validatedData['date'],
                     'calculated_net_minutes' => $netWorkMinutes,
-                    'inputs' => $request->only(['working_start_hour', 'working_end_hour', 'break_start_at', 'break_ends_at'])
+                    'inputs' => $request->only(['working_start_hour', 'working_end_hour', 'break_duration_hours'])
                 ]);
                 $netWorkMinutes = 0; // Clamp to 0 if negative
             }

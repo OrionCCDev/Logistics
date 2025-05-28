@@ -26,10 +26,8 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Code</th>
-                                        <th>Branch</th>
-                                        <th>Status</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
+                                        <th>Fuel Consume (this month)</th>
+
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -38,14 +36,12 @@
                                     <tr>
                                         <td>{{ $project->name }}</td>
                                         <td>{{ $project->code }}</td>
-                                        <td>{{ $project->branch->name }}</td>
                                         <td>
-                                            <span class="badge badge-{{ $project->status === 'active' ? 'success' : ($project->status === 'completed' ? 'info' : 'warning') }}">
-                                                {{ ucfirst($project->status) }}
-                                            </span>
+                                            <a href="{{ route('projects.fuel_consumption_summary', $project->id) }}">
+                                                {{ $project->fuel_consumption_this_month }}
+                                            </a>
                                         </td>
-                                        <td>{{ $project->start_date ? $project->start_date->format('Y-m-d') : 'N/A' }}</td>
-                                        <td>{{ $project->end_date ? $project->end_date->format('Y-m-d') : 'N/A' }}</td>
+
                                         <td>
                                             <div class="btn-group mr-2" role="group" aria-label="First group">
                                                 <a href="{{ route('projects.show', $project->id) }}" class="btn btn-success">
