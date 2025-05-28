@@ -35,7 +35,7 @@
                                         <th>ID</th>
                                         <th>Image</th>
                                         <th>Name</th>
-                                        <th>Email</th>
+                                        <th>Projects</th>
                                         <th>Position</th>
                                         <th>Options</th>
                                     </tr>

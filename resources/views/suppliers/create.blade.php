@@ -66,9 +66,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="text-center">
-                                        <div id="logo-placeholder-container" class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 200px; height: 200px; border: 1px solid #ddd; margin: auto; display: none;">
-                                            <span id="logo-placeholder-text" class="text-secondary display-4"></span>
-                                        </div>
+
                                         <img id="logo-preview" style="max-width: 200px; max-height: 200px; display: block;" src="{{ asset('dashAssets/dist/img/img-thumb.jpg') }}" class="img-fluid img-thumbnail" alt="Logo Preview">
                                     </div>
                                 </div>
@@ -263,9 +261,7 @@
                         <div class="form-group">
                             <label class="control-label mb-10" for="category_id">Category</label>
                             <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="icon-tag"></i></span>
-                                </div>
+                                
                                 <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" id="category_id">
                                     <option value="">Select a category</option>
                                     @foreach($categories as $category)
@@ -308,9 +304,11 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 $(document).ready(function() {
+    console.log('Document ready, jQuery loaded.');
+
     // Initialize Select2 for category dropdown
     $('#category_id').select2({
         placeholder: "Select a category",
@@ -319,6 +317,7 @@ $(document).ready(function() {
 
     // Function to update logo placeholder
     function updateLogoPlaceholder() {
+        console.log('updateLogoPlaceholder called.');
         var companyName = $('#name').val();
         var logoPreview = $('#logo-preview');
         var logoPlaceholderContainer = $('#logo-placeholder-container');
@@ -343,6 +342,7 @@ $(document).ready(function() {
 
     // Handle logo file input change
     $('#logo').change(function() {
+        console.log('Logo file input changed.');
         const file = this.files[0];
         if (file) {
             let reader = new FileReader();
@@ -359,45 +359,57 @@ $(document).ready(function() {
 
     // Handle company name input change
     $('#name').on('input', function() {
+        console.log('Company name input changed.');
         updateLogoPlaceholder();
     });
 
     // Handle fileinput remove (if using a plugin that triggers this)
     $('[data-provides="fileinput"]').on('clear.bs.fileinput', function () {
+        console.log('Fileinput cleared (logo section).');
         updateLogoPlaceholder();
     });
      $('[data-provides="fileinput"]').on('change.bs.fileinput', function () {
         // This event is often triggered when a file is selected.
         // The $('#logo').change() handler should cover this, but update for safety.
+        console.log('Fileinput changed (logo section).');
         updateLogoPlaceholder();
     });
 
 
     // Initial call to set the correct state
+    console.log('Initial call to updateLogoPlaceholder.');
     updateLogoPlaceholder();
 
     // File preview for PDF/DOC files
     function setupFilePreview(inputId, previewId, placeholderId, iframeId) {
         $('#' + inputId).change(function() {
+            console.log('File changed for input:', inputId);
             const file = this.files[0];
             const previewContainer = $('#' + previewId);
             const placeholder = $('#' + placeholderId);
             const iframe = $('#' + iframeId);
 
             if (file) {
+                console.log('File selected:', file.name, 'Type:', file.type);
                 if (file.type === "application/pdf" || file.type.startsWith("application/msword") || file.type.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml")) {
+                    console.log('Attempting to read file for iframe preview.');
                     let reader = new FileReader();
                     reader.onload = function(event) {
+                        console.log('File read successfully, setting iframe src for:', inputId);
                         iframe.attr('src', event.target.result).removeClass('d-none');
                         placeholder.addClass('d-none');
                     }
+                    reader.onerror = function(event) {
+                        console.error('Error reading file for iframe:', inputId, event);
+                    }
                     reader.readAsDataURL(file);
                 } else {
-                    // For non-PDF/DOC files, or if you want to handle other image types differently
+                    console.log('File type not supported for direct preview:', file.type, 'for input:', inputId);
                     placeholder.html('<p class="mt-2">Preview not available for this file type.</p>').removeClass('d-none');
                     iframe.addClass('d-none');
                 }
             } else {
+                console.log('No file selected or file removed for input:', inputId);
                 iframe.addClass('d-none').attr('src', '');
                 placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
             }
@@ -409,6 +421,9 @@ $(document).ready(function() {
         // For simplicity, if the input value becomes empty, we reset.
         // This might need adjustment based on how your fileinput plugin works for removal.
          $('#' + inputId).closest('.fileinput').on('clear.bs.fileinput', function() {
+            console.log('File cleared for input:', inputId, '(clear.bs.fileinput event)');
+            const placeholder = $('#' + placeholderId);
+            const iframe = $('#' + iframeId);
             iframe.addClass('d-none').attr('src', '');
             placeholder.removeClass('d-none').html('<i class="icon-file-text" style="font-size: 48px;"></i><p class="mt-2">No file selected</p>');
         });
@@ -432,4 +447,4 @@ $(document).ready(function() {
         color: #6c757d;
     }
 </style>
-@endsection
+@endpush

@@ -23,8 +23,8 @@ class ProjectVehicleController extends Controller
      */
     public function create()
     {
-        $projects = Project::where('status', 'active')->get();
-        $vehicles = Vehicle::where('vehicle_status', 'active')->get();
+        $projects = Project::all();
+        $vehicles = Vehicle::all();
         return view('project_vehicles.create', compact('projects', 'vehicles'));
     }
 
@@ -61,8 +61,8 @@ class ProjectVehicleController extends Controller
      */
     public function edit(ProjectVehicle $projectVehicle)
     {
-        $projects = Project::where('status', 'active')->get();
-        $vehicles = Vehicle::where('vehicle_status', 'active')->get();
+        $projects = Project::all();
+        $vehicles = Vehicle::all();
         return view('project_vehicles.edit', compact('projectVehicle', 'projects', 'vehicles'));
     }
 

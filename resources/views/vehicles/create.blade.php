@@ -84,13 +84,13 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group col-md-4">
+                                    {{--  <div class="form-group col-md-4">
                                         <label for="vehicle_year">Vehicle Year <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('vehicle_year') is-invalid @enderror" id="vehicle_year" name="vehicle_year" value="{{ old('vehicle_year') }}" >
                                         @error('vehicle_year')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
-                                    </div>
+                                    </div>  --}}
 
                                     <div class="form-group col-md-4">
                                         <label for="vehicle_status">Status <span class="text-danger">*</span></label>
@@ -109,6 +109,25 @@
                                         <label for="vehicle_lpo_number">LPO Number <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('vehicle_lpo_number') is-invalid @enderror" id="vehicle_lpo_number" name="vehicle_lpo_number" value="{{ old('vehicle_lpo_number') }}" >
                                         @error('vehicle_lpo_number')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group col-md-4">
+                                        <label for="operator_id" class="form-label">
+                                            Assign Operator/Driver <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-control custom-select form-control-lg select2-livewire @error('operator_id') is-invalid @enderror"
+                                                id="operator_id"
+                                                name="operator_id">
+                                            <option value="">Select Operator</option>
+                                            @foreach($operators as $operator)
+                                                <option value="{{ $operator->id }}" {{ old('operator_id') == $operator->id ? 'selected' : '' }}>
+                                                    {{ $operator->name }} ({{ $operator->license_number }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('operator_id')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -228,28 +247,8 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="form-group col-md-4">
-                                        <label for="operator_id" class="form-label">
-                                            Assign Operator/Driver <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-control custom-select form-control-lg select2-livewire @error('operator_id') is-invalid @enderror"
-                                                id="operator_id"
-                                                name="operator_id">
-                                            <option value="">Select Operator</option>
-                                            @foreach($operators as $operator)
-                                                <option value="{{ $operator->id }}" {{ old('operator_id') == $operator->id ? 'selected' : '' }}>
-                                                    {{ $operator->name }} ({{ $operator->license_number }})
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('operator_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
+
+
                         </div>
 
                         <div class="form-group">
@@ -280,60 +279,103 @@
             placeholder: 'Select an option',
             allowClear: true
         });
+
+        // Handle vehicle image preview using Jasny Bootstrap event
+        $('#vehicle_image').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW: #vehicle_image .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleImagePreview(fileInput, 'vehicle_image-preview');
+            } else {
+                console.error("PREVIEW: Could not find file input for vehicle_image.");
+            }
+        });
+
+        // Handle LPO document preview using Jasny Bootstrap event
+        $('#vehicle_lpo_document').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW: #vehicle_lpo_document .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleDocumentPreview(fileInput, 'vehicle_lpo_document-placeholder', 'vehicle_lpo_document-iframe');
+            } else {
+                console.error("PREVIEW: Could not find file input for vehicle_lpo_document.");
+            }
+        });
+
+        // Handle Mulkia document preview using Jasny Bootstrap event
+        $('#vehicle_mulkia_document').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW: #vehicle_mulkia_document .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleDocumentPreview(fileInput, 'vehicle_mulkia_document-placeholder', 'vehicle_mulkia_document-iframe');
+            } else {
+                console.error("PREVIEW: Could not find file input for vehicle_mulkia_document.");
+            }
+        });
     });
 
-    // Function to handle file previews
-    function handleFilePreview(input, previewId, placeholderId, iframeId = null) {
+    // Function to handle image previews
+    function handleImagePreview(input, previewImageId) {
+        console.log("PREVIEW: handleImagePreview called for ", previewImageId);
+        const previewImage = $(`#${previewImageId}`);
         if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const fileType = file.type;
-
-            // For images
-            if (fileType.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $(`#${previewId}`).attr('src', e.target.result);
-                }
-                reader.readAsDataURL(file);
+            console.log("PREVIEW: File selected for image: ", input.files[0].name, input.files[0].type);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                console.log("PREVIEW: FileReader onload, setting image src.");
+                previewImage.attr('src', e.target.result);
             }
-            // For PDFs and documents
-            else if (fileType === 'application/pdf' || fileType.includes('document')) {
-                const url = URL.createObjectURL(file);
-                $(`#${placeholderId}`).addClass('d-none');
-                $(`#${iframeId}`).removeClass('d-none').attr('src', url);
+            reader.onerror = function(e) {
+                console.error("PREVIEW: FileReader error: ", e);
             }
+            reader.readAsDataURL(input.files[0]);
         } else {
-            // Reset preview if no file selected
-            if (iframeId) {
-                $(`#${placeholderId}`).removeClass('d-none');
-                $(`#${iframeId}`).addClass('d-none').attr('src', '');
-            } else {
-                $(`#${previewId}`).attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
-            }
+            console.log("PREVIEW: No file selected for image, resetting to default.");
+            previewImage.attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
         }
     }
 
-    // Handle vehicle image preview
-    $('#vehicle_image').on('change', function() {
-        handleFilePreview(this, 'vehicle_image-preview');
-    });
+    // Function to handle document previews (PDF, DOC, DOCX)
+    function handleDocumentPreview(input, placeholderId, iframeId) {
+        console.log("PREVIEW: handleDocumentPreview called for ", placeholderId);
+        const placeholder = $(`#${placeholderId}`);
+        const iframe = $(`#${iframeId}`);
 
-    // Handle trade license preview
-    $('#vehicle_lpo_document').on('change', function() {
-        handleFilePreview(this, null, 'vehicle_lpo_document-placeholder', 'vehicle_lpo_document-iframe');
-    });
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const fileType = file.type;
+            console.log("PREVIEW: File selected for document: ", file.name, fileType);
 
-    // Handle VAT certificate preview
-    $('#vehicle_mulkia_document').on('change', function() {
-        handleFilePreview(this, null, 'vehicle_mulkia_document-placeholder', 'vehicle_mulkia_document-iframe');
-    });
+            if (fileType === 'application/pdf') {
+                console.log("PREVIEW: PDF selected, creating object URL and setting iframe src.");
+                const url = URL.createObjectURL(file);
+                placeholder.addClass('d-none');
+                iframe.attr('src', url).removeClass('d-none');
+            } else if (fileType.includes('msword') || fileType.includes('officedocument') || fileType.includes('document')) {
+                console.log("PREVIEW: DOC/DOCX or other document selected. Attempting to set iframe src (may not render).");
+                const url = URL.createObjectURL(file);
+                placeholder.addClass('d-none');
+                iframe.attr('src', url).removeClass('d-none');
+                // Note: Direct rendering of DOC/DOCX in iframe is often not supported by browsers.
+                // Consider alternative for these types if direct preview is essential (e.g., just showing filename).
+            } else {
+                console.log("PREVIEW: Unsupported document type: ", fileType);
+                placeholder.removeClass('d-none');
+                iframe.addClass('d-none').attr('src', '');
+                alert('Unsupported file type for document preview. Please select a PDF, DOC, or DOCX file.');
+            }
+        } else {
+            console.log("PREVIEW: No file selected for document, resetting.");
+            placeholder.removeClass('d-none');
+            iframe.addClass('d-none').attr('src', '');
+        }
+    }
 
-    // Handle statement preview
-
-    // Handle file input clear
-    $('.fileinput-exists[data-dismiss="fileinput"]').on('click', function() {
-        const input = $(this).closest('.fileinput').find('input[type="file"]');
+    // Handle file input clear (jasny-bootstrap event)
+    $(document).on('filecleared.bs.fileinput', '.fileinput', function() {
+        const input = $(this).find('input[type="file"]');
         const inputId = input.attr('id');
+        console.log("PREVIEW: filecleared.bs.fileinput event fired for input: ", inputId);
 
         if (inputId === 'vehicle_image') {
             $('#vehicle_image-preview').attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');

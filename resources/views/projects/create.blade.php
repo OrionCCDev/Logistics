@@ -85,7 +85,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        {{--  <div class="form-group">
                             <label class="control-label mb-10" for="start_date">Start Date</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -111,7 +111,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div>  --}}
 
                         <div class="form-group">
                             <label class="control-label mb-10" for="status">Status</label>

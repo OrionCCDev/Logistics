@@ -26,7 +26,7 @@ class VehicleController extends Controller
     public function create()
     {
         $operators = \App\Models\Operator::where('status', 'active')->get();
-        $projects = \App\Models\Project::where('status', 'active')->get();
+        $projects = \App\Models\Project::all();
         $suppliers = \App\Models\Supplier::all();
         return view('vehicles.create', compact('operators', 'projects', 'suppliers'));
     }

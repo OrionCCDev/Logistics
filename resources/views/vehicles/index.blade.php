@@ -29,7 +29,7 @@
                                     <th>Supplier</th>
                                     <th>Plate Number</th>
                                     <th>Type</th>
-                                    <th>Project</th>
+                                    <th>Projects</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -42,7 +42,11 @@
                                         </td>
                                         <td>{{ $vehicle->plate_number }}</td>
                                         <td>{{ $vehicle->vehicle_type ?? 'N/A' }}</td>
-                                        <td>{{ $vehicle->projects->last()->name ?? 'N/A' }}</td>
+                                        <td>
+                                            @foreach($vehicle->projects as $project)
+                                                <span class="badge badge-primary">{{ $project->name }}-{{ $project->code }}</span>
+                                            @endforeach
+                                        </td>
 
 
                                         <td>

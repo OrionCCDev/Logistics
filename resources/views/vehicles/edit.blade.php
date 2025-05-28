@@ -288,68 +288,130 @@
 
 @section('scripts')
 <script>
-    // Function to handle file previews
-    function handleFilePreview(input, previewId, placeholderId, iframeId) {
-        if (input.files && input.files[0]) {
-            const file = input.files[0];
-            const fileType = file.type;
+    $(document).ready(function() {
+        // Initialize select2 if it's used on this page (assuming it might be based on create.blade.php)
+        if (typeof $.fn.select2 === 'function') {
+            $('#operator_id, #project_id, #supplier_id').select2({
+                theme: 'bootstrap4',
+                width: '100%',
+                placeholder: 'Select an option',
+                allowClear: true
+            });
+        }
 
-            // For images
-            if (fileType.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $(`#${previewId}`).attr('src', e.target.result);
-                }
-                reader.readAsDataURL(file);
-            }
-            // For PDFs and documents
-            else if (fileType === 'application/pdf' || fileType.includes('document')) {
-                const url = URL.createObjectURL(file);
-                $(`#${placeholderId}`).addClass('d-none');
-                $(`#${previewId}`).find('.text-center').hide();
-                $(`#${iframeId}`).show().attr('src', url);
-            }
-        } else {
-            // Reset preview if no file selected
-            if (previewId.includes('vehicle_image')) {
-                $(`#${previewId}`).attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
+        // Handle vehicle image preview using Jasny Bootstrap event
+        $('#vehicle_image').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW (edit): #vehicle_image .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleImagePreview(fileInput, 'vehicle_image-preview');
             } else {
-                $(`#${placeholderId}`).removeClass('d-none');
-                $(`#${previewId}`).find('.text-center').show();
-                $(`#${iframeId}`).hide().attr('src', '');
+                console.error("PREVIEW (edit): Could not find file input for vehicle_image.");
             }
+        });
+
+        // Handle LPO document preview using Jasny Bootstrap event
+        $('#vehicle_lpo_document').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW (edit): #vehicle_lpo_document .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleDocumentPreview(fileInput, 'vehicle_lpo_document-preview', 'vehicle_lpo_document-placeholder', 'vehicle_lpo_document-iframe');
+            } else {
+                console.error("PREVIEW (edit): Could not find file input for vehicle_lpo_document.");
+            }
+        });
+
+        // Handle Mulkia document preview using Jasny Bootstrap event
+        $('#vehicle_mulkia_document').closest('.fileinput').on('change.bs.fileinput', function() {
+            console.log("PREVIEW (edit): #vehicle_mulkia_document .fileinput change.bs.fileinput event fired.");
+            const fileInput = $(this).find('input[type="file"]').get(0);
+            if (fileInput) {
+                handleDocumentPreview(fileInput, 'vehicle_mulkia_document-preview', 'vehicle_mulkia_document-placeholder', 'vehicle_mulkia_document-iframe');
+            } else {
+                console.error("PREVIEW (edit): Could not find file input for vehicle_mulkia_document.");
+            }
+        });
+    });
+
+    // Function to handle image previews
+    function handleImagePreview(input, previewImageId) {
+        console.log("PREVIEW (edit): handleImagePreview called for ", previewImageId);
+        const previewImage = $(`#${previewImageId}`);
+        if (input.files && input.files[0]) {
+            console.log("PREVIEW (edit): File selected for image: ", input.files[0].name, input.files[0].type);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                console.log("PREVIEW (edit): FileReader onload, setting image src.");
+                previewImage.attr('src', e.target.result);
+            }
+            reader.onerror = function(e) {
+                console.error("PREVIEW (edit): FileReader error: ", e);
+            }
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            console.log("PREVIEW (edit): No file selected for image, resetting.");
+            previewImage.attr('src', '{{ $vehicle->vehicle_image ? asset( $vehicle->vehicle_image) : asset(\'dashAssets/dist/img/img-thumb.jpg\') }}');
         }
     }
 
-    // Handle vehicle image preview
-    $('#vehicle_image').on('change', function() {
-        handleFilePreview(this, 'vehicle_image-preview');
-    });
+    // Function to handle document previews (PDF, DOC, DOCX)
+    function handleDocumentPreview(input, previewContainerId, placeholderId, iframeId) {
+        console.log("PREVIEW (edit): handleDocumentPreview called for ", placeholderId);
+        const previewContainer = $(`#${previewContainerId}`);
+        const placeholder = $(`#${placeholderId}`);
+        const iframe = $(`#${iframeId}`);
+        const existingDocumentLinkDiv = previewContainer.find('.text-center:has(a[target="_blank"])');
 
-    // Handle LPO document preview
-    $('#vehicle_lpo_document').on('change', function() {
-        handleFilePreview(this, 'vehicle_lpo_document-preview', 'vehicle_lpo_document-placeholder', 'vehicle_lpo_document-iframe');
-    });
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const fileType = file.type;
+            console.log("PREVIEW (edit): File selected for document: ", file.name, fileType);
 
-    // Handle Mulkia document preview
-    $('#vehicle_mulkia_document').on('change', function() {
-        handleFilePreview(this, 'vehicle_mulkia_document-preview', 'vehicle_mulkia_document-placeholder', 'vehicle_mulkia_document-iframe');
-    });
+            if (fileType === 'application/pdf') {
+                console.log("PREVIEW (edit): PDF selected, creating object URL.");
+                const url = URL.createObjectURL(file);
+                placeholder.addClass('d-none');
+                existingDocumentLinkDiv.hide();
+                iframe.attr('src', url).show();
+                console.log("PREVIEW (edit): PDF iframe src set to: ", url);
+            } else if (fileType.includes('msword') || fileType.includes('officedocument') || fileType.includes('document')) {
+                console.log("PREVIEW (edit): DOC/DOCX or other document selected. Attempting to set iframe src.");
+                const url = URL.createObjectURL(file);
+                placeholder.addClass('d-none');
+                existingDocumentLinkDiv.hide();
+                iframe.attr('src', url).show();
+                console.log("PREVIEW (edit): Document iframe src set to: ", url);
+            } else {
+                console.log("PREVIEW (edit): Unsupported document type: ", fileType);
+                placeholder.removeClass('d-none');
+                existingDocumentLinkDiv.show();
+                iframe.hide().attr('src', '');
+                alert('Unsupported file type for document preview. Please select a PDF, DOC, or DOCX file.');
+            }
+        } else {
+            console.log("PREVIEW (edit): No file selected for document, resetting.");
+            placeholder.removeClass('d-none');
+            existingDocumentLinkDiv.show();
+            iframe.hide().attr('src', '');
+        }
+    }
 
-    // Handle file input clear
-    $('.fileinput-exists[data-dismiss="fileinput"]').on('click', function() {
-        const input = $(this).closest('.fileinput').find('input[type="file"]');
+    // Handle file input clear (jasny-bootstrap event)
+    $(document).on('filecleared.bs.fileinput', '.fileinput', function() {
+        const input = $(this).find('input[type="file"]');
         const inputId = input.attr('id');
+        console.log("PREVIEW (edit): filecleared.bs.fileinput event fired for input: ", inputId);
 
         if (inputId === 'vehicle_image') {
-            $('#vehicle_image-preview').attr('src', '{{ asset('dashAssets/dist/img/img-thumb.jpg') }}');
+            // Reset to original or default image
+            $('#vehicle_image-preview').attr('src', '{{ $vehicle->vehicle_image ? asset( $vehicle->vehicle_image) : asset(\'dashAssets/dist/img/img-thumb.jpg\') }}');
         } else if (inputId === 'vehicle_lpo_document') {
             $('#vehicle_lpo_document-placeholder').removeClass('d-none');
-            $('#vehicle_lpo_document-preview').find('.text-center').show();
+            $('#vehicle_lpo_document-preview').find('.text-center:has(a[target="_blank"])').show(); // Show existing doc link
             $('#vehicle_lpo_document-iframe').hide().attr('src', '');
         } else if (inputId === 'vehicle_mulkia_document') {
             $('#vehicle_mulkia_document-placeholder').removeClass('d-none');
-            $('#vehicle_mulkia_document-preview').find('.text-center').show();
+            $('#vehicle_mulkia_document-preview').find('.text-center:has(a[target="_blank"])').show(); // Show existing doc link
             $('#vehicle_mulkia_document-iframe').hide().attr('src', '');
         }
     });

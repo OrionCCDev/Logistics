@@ -35,8 +35,7 @@
                             <th>Logo</th>
                             <th>Name</th>
                             <th>Contact</th>
-                            <th>Category</th>
-                            <th>Status</th>
+
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -60,18 +59,7 @@
                                     <div>{{ $supplier->contact_name }}</div>
                                     <div class="text-muted small">{{ $supplier->contact_email }}</div>
                                 </td>
-                                <td>
-                                    @if($supplier->category)
-                                        <span class="badge badge-info">{{ $supplier->category->name }}</span>
-                                    @else
-                                        <span class="text-muted">No category</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge {{ $supplier->status === 'active' ? 'badge-success' : 'badge-danger' }}">
-                                        {{ ucfirst($supplier->status) }}
-                                    </span>
-                                </td>
+                                
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="{{ route('suppliers.show', $supplier) }}" class="btn btn-success btn-sm">

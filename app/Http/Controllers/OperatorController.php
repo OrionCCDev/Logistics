@@ -25,8 +25,8 @@ class OperatorController extends Controller
      */
     public function create()
     {
-        $suppliers = Supplier::where('status', 'active')->get();
-        $vehicles = Vehicle::where('vehicle_status', 'active')->get();
+        $suppliers = Supplier::all();
+        $vehicles = Vehicle::all();
         return view('operators.create', compact('suppliers', 'vehicles'));
     }
 
@@ -113,8 +113,8 @@ class OperatorController extends Controller
      */
     public function edit(Operator $operator)
     {
-        $suppliers = Supplier::where('status', 'active')->get();
-        $vehicles = Vehicle::where('vehicle_status', 'active')->get();
+        $suppliers = Supplier::all();
+        $vehicles = Vehicle::all();
         return view('operators.edit', compact('operator', 'suppliers', 'vehicles'));
     }
 
