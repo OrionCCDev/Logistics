@@ -110,7 +110,7 @@
                 </table>
             </div>
             <div class="mt-3">
-                {{ $invoices->links() }}
+                {{ $invoices->links('pagination::bootstrap-4') }}
             </div>
         </section>
     </div>

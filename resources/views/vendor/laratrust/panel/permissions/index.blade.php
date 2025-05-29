@@ -49,5 +49,5 @@
       </div>
     </div>
   </div>
-  {{ $permissions->links('laratrust::panel.pagination') }}
+  {{ $permissions->links('pagination::bootstrap-4') }}
 @endsection

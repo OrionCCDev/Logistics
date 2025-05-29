@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="mt-4">
-                        {{ $vehicles->links() }}
+                        {{ $vehicles->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>

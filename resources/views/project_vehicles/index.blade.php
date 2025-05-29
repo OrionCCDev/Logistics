@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="mt-4">
-                        {{ $projectVehicles->links() }}
+                        {{ $projectVehicles->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>

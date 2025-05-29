@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Vehicle;
 use App\Models\TimesheetDaily;
+use App\Models\Project;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,9 @@ class VehicleTimesheetTable extends Component
     public $sortDirection = 'desc';
     public $search = '';
     public $timesheetIdToDelete = null;
+    public $projectFilter = '';
+    public $projects = [];
+    public $thisMonthOnly = false;
 
     // Listener for the event from the form component
     protected $listeners = [
@@ -34,6 +38,7 @@ class VehicleTimesheetTable extends Component
     public function mount(Vehicle $vehicle)
     {
         $this->vehicle = $vehicle;
+        $this->projects = Project::orderBy('name')->get();
     }
 
     public function sortBy($field)
@@ -48,6 +53,11 @@ class VehicleTimesheetTable extends Component
     }
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingProjectFilter()
     {
         $this->resetPage();
     }
@@ -87,10 +97,22 @@ class VehicleTimesheetTable extends Component
         }
     }
 
+    public function filterThisMonth()
+    {
+        $this->thisMonthOnly = true;
+        $this->resetPage();
+    }
+
+    public function clearMonthFilter()
+    {
+        $this->thisMonthOnly = false;
+        $this->resetPage();
+    }
+
     public function render()
     {
         $query = TimesheetDaily::where('vehicle_id', $this->vehicle->id)
-            ->with('project') // Eager load project relationship
+            ->with('project')
             ->when($this->search, function ($q) {
                 $q->where(function ($subQuery) {
                     $subQuery->where('date', 'like', '%' . $this->search . '%')
@@ -100,6 +122,12 @@ class VehicleTimesheetTable extends Component
                              ->orWhere('working_hours', 'like', '%' . $this->search . '%')
                              ->orWhere('status', 'like', '%' . $this->search . '%');
                 });
+            })
+            ->when($this->projectFilter, function ($q) {
+                $q->where('project_id', $this->projectFilter);
+            })
+            ->when($this->thisMonthOnly, function ($q) {
+                $q->whereBetween('date', [now()->startOfMonth(), now()->endOfMonth()]);
             });
 
         $timesheets = $query->orderBy($this->sortField, $this->sortDirection)
@@ -107,6 +135,7 @@ class VehicleTimesheetTable extends Component
 
         return view('livewire.vehicle-timesheet-table', [
             'timesheets' => $timesheets,
+            'projects' => $this->projects,
         ]);
     }
 }

@@ -120,7 +120,7 @@
                 </table>
             </div>
             <div class="mt-3">
-                {{ $timesheets->links() }}
+                {{ $timesheets->links('pagination::bootstrap-4') }}
             </div>
         </section>
     </div>

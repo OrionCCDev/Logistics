@@ -36,7 +36,7 @@
     <link href="{{ asset('dashAssets/dist/css/loader.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Vite CSS and JS -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css']) <!-- Only CSS, JS is loaded via script tags at the bottom -->
     @livewireStyles
 
     <!-- Page Specific Styles -->
@@ -850,7 +850,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
                             <i class="fas fa-file-alt"></i>
                             <span>Reports</span>
                         </a>
@@ -1000,13 +1000,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
                             <i class="fas fa-file-alt"></i>
                             <span>Reports</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('invoices.index') }}" class="nav-link">
                             <i class="fas fa-file-invoice"></i>
                             <span>Invoices</span>
                         </a>

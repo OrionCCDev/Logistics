@@ -115,6 +115,7 @@ class VehicleController extends Controller
         $date_from = $request->input('date_from');
         $date_to = $request->input('date_to');
         $period = $request->input('period');
+        $project_id = $request->input('project_id');
 
         if ($period) {
             switch ($period) {
@@ -141,9 +142,16 @@ class VehicleController extends Controller
             $fuelConsumptionQuery->where('date', '<=', $date_to);
         }
 
-        $fuelConsumptions = $fuelConsumptionQuery->get();
+        if ($project_id) {
+            $fuelConsumptionQuery->where('project_id', $project_id);
+        }
 
-        return view('vehicles.show', compact('vehicle', 'fuelConsumptions', 'date_from', 'date_to', 'period'));
+        $fuelConsumptions = $fuelConsumptionQuery->paginate(31);
+
+        // Get only projects assigned to this vehicle
+        $projects = $vehicle->projects()->get();
+
+        return view('vehicles.show', compact('vehicle', 'fuelConsumptions', 'date_from', 'date_to', 'period', 'project_id', 'projects'));
     }
 
     /**

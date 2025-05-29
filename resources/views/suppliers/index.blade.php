@@ -59,7 +59,7 @@
                                     <div>{{ $supplier->contact_name }}</div>
                                     <div class="text-muted small">{{ $supplier->contact_email }}</div>
                                 </td>
-                                
+
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="{{ route('suppliers.show', $supplier) }}" class="btn btn-success btn-sm">
@@ -110,7 +110,7 @@
                 </table>
             </div>
             <div class="mt-3">
-                {{ $suppliers->links() }}
+                {{ $suppliers->links('pagination::bootstrap-4') }}
             </div>
         </section>
     </div>

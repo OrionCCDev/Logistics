@@ -64,7 +64,7 @@
                             </table>
                         </div>
                         <div class="mt-4">
-                            {{ $timesheets->links() }}
+                            {{ $timesheets->links('pagination::bootstrap-4') }}
                         </div>
                     @endif
                 </div>

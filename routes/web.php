@@ -15,6 +15,11 @@ use App\Http\Controllers\TimesheetDailyController;
 use App\Http\Controllers\VehicleTimesheetController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ProjectVehicleController;
+use App\Models\Project;
+use App\Models\Vehicle;
+use App\Models\Operator;
+use App\Models\TimesheetDaily;
+use App\Livewire\ReportsPage;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -51,14 +56,16 @@ Route::middleware('auth')->group(function () {
             // Vehicle specific timesheet creation
             Route::post('vehicles/{vehicle}/timesheets', [VehicleTimesheetController::class, 'storeForVehicle'])->name('timesheets.storeForVehicle');
 
-            // Analytics Route
             Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('reports', [App\Http\Controllers\ReportsController::class, 'index'])->name('reports.index');
         });
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
 });
 
 // Route::middleware(['auth'])->group(function () {

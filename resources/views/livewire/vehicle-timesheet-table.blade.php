@@ -22,6 +22,14 @@
         <div class="col-md-3">
             <input wire:model.live.debounce.300ms="search" type="text" class="form-control" placeholder="Search timesheets...">
         </div>
+        <div class="col-md-3">
+            <select wire:model.live="projectFilter" class="form-control">
+                <option value="">All Projects</option>
+                @foreach ($projects as $project)
+                    <option value="{{ $project->id }}">{{ $project->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-md-2">
             <select wire:model.live="perPage" class="form-control">
                 <option value="10">10 per page</option>
@@ -29,6 +37,16 @@
                 <option value="50">50 per page</option>
                 <option value="100">100 per page</option>
             </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-outline-info w-100 mb-1" wire:click="filterThisMonth">
+                This Month's History
+            </button>
+            @if($thisMonthOnly)
+                <button class="btn btn-outline-secondary w-100" wire:click="clearMonthFilter">
+                    Clear Filter
+                </button>
+            @endif
         </div>
     </div>
 
@@ -47,11 +65,8 @@
                     </th>
                     {{-- Placeholder for Break Duration --}}
                     <th>Break Hours</th>
-                    {{-- Placeholder for Net Hours --}}
-                    <th>Net Hours</th>
-                    <th wire:click="sortBy('status')" style="cursor: pointer;">
-                        Status @include('partials._sort-icon', ['field' => 'status'])
-                    </th>
+
+
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -62,10 +77,9 @@
                         <td>{{ $timesheet->project->name ?? 'N/A' }}</td>
                         <td>{{ $timesheet->working_hours }}</td>
                          {{-- Display calculated break duration if available --}}
-                        <td>{{ $timesheet->break_duration_display ?? '0.00' }}</td>
+                        <td>{{ number_format(($timesheet->break_duration_minutes ?? 0) / 60, 2) }}</td>
                         {{-- Display calculated net working hours if available --}}
-                        <td>{{ $timesheet->net_working_hours_display ?? $timesheet->working_hours }}</td>
-                        <td><span class="badge badge-{{ $timesheet->status_color ?? 'secondary' }}">{{ Str::title($timesheet->status) }}</span></td>
+
                         <td>
                             <a href="{{ route('timesheets.edit', $timesheet->id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
                                 <i class="fas fa-edit"></i> Edit
@@ -92,7 +106,7 @@
 
     {{-- Pagination Links --}}
     <div class="mt-3">
-        {{ $timesheets->links() }}
+        {{ $timesheets->links('pagination::bootstrap-4') }}
     </div>
 
     {{-- Edit Timesheet Modal Removed --}}

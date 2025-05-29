@@ -137,9 +137,6 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Project</th>
-
-                                                        <th>Status</th>
-                                                        <th>Notes</th>
                                                         <th>Timesheet</th>
                                                     </tr>
                                                 </thead>
@@ -148,12 +145,7 @@
                                                         <tr>
                                                             <td><a href="{{ route('projects.show', $projectVehicle->project->id) }}">{{ $projectVehicle->project->name }}</a></td>
 
-                                                            <td>
-                                                                <span class="badge badge-{{ $projectVehicle->status === 'active' ? 'success' : 'danger' }}">
-                                                                    {{ ucfirst($projectVehicle->status) }}
-                                                                </span>
-                                                            </td>
-                                                            <td>{{ $projectVehicle->notes ?? 'N/A' }}</td>
+
                                                             <td>
                                                                 <a href="{{ route('vehicles.project.timesheet', ['vehicle' => $vehicle->id, 'project' => $projectVehicle->project->id]) }}" class="btn btn-xs btn-outline-primary">
                                                                     <i class="fa fa-clock-o"></i> View Timesheet
@@ -189,14 +181,14 @@
                                 <div class="form-group">
                                     <label for="date_from">From</label>
                                     <input type="date" id="date_from" name="date_from" class="form-control"
-                                           value="{{ $date_from ?? '' }}">
+                                        value="{{ $date_from ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="date_to">To</label>
                                     <input type="date" id="date_to" name="date_to" class="form-control"
-                                           value="{{ $date_to ?? '' }}">
+                                        value="{{ $date_to ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -207,6 +199,17 @@
                                         <option value="this_week" {{ ($period ?? '') == 'this_week' ? 'selected' : '' }}>This Week</option>
                                         <option value="this_month" {{ ($period ?? '') == 'this_month' ? 'selected' : '' }}>This Month</option>
                                         <option value="this_year" {{ ($period ?? '') == 'this_year' ? 'selected' : '' }}>This Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="project_id">Project</label>
+                                    <select id="project_id" name="project_id" class="form-control">
+                                        <option value="">All Projects</option>
+                                        @foreach($projects as $project)
+                                            <option value="{{ $project->id }}" {{ (request('project_id', $project_id ?? '') == $project->id) ? 'selected' : '' }}>{{ $project->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -227,11 +230,10 @@
                                     <tr>
                                         <th>Date</th>
                                         <th>Project</th>
-                                        <th>Odometer Start</th>
-                                        <th>Odometer End</th>
-                                        <th>Distance</th>
+
+                                        <th>Total Working Hours</th>
                                         <th>Fuel Consumption</th>
-                                        <th>Method</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -239,22 +241,18 @@
                                         <tr>
                                             <td>{{ $timesheet->date->format('d M Y') }}</td>
                                             <td>{{ $timesheet->project->name ?? 'N/A' }}</td>
-                                            <td>{{ $timesheet->odometer_start ? number_format($timesheet->odometer_start, 2) . ' km' : 'N/A' }}</td>
-                                            <td>{{ $timesheet->odometer_ends ? number_format($timesheet->odometer_ends, 2) . ' km' : 'N/A' }}</td>
+
                                             <td>
-                                                @if($timesheet->odometer_start && $timesheet->odometer_ends)
-                                                    {{ number_format($timesheet->odometer_ends - $timesheet->odometer_start, 2) }} km
-                                                @else
-                                                    N/A
-                                                @endif
+                                                {{ number_format($timesheet->working_hours, 2) }}
                                             </td>
                                             <td>{{ number_format($timesheet->fuel_consumption, 2) }}</td>
-                                            <td>{{ ucfirst(str_replace('_', ' ', $timesheet->fuel_consumption_status)) }}</td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
+                        {{ $fuelConsumptions->withQueryString()->links('pagination::bootstrap-4') }}
                     @else
                         <p class="text-muted mb-0">No fuel consumption data found for the selected period.</p>
                     @endif
