@@ -22,6 +22,20 @@
                         </div>
                     @endif
 
+                    {{-- Search Form --}}
+                    <form action="{{ route('vehicles.index') }}" method="GET" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Search by Plate Number or Type" value="{{ request('search') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
