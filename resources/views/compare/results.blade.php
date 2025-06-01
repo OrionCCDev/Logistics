@@ -70,8 +70,8 @@
                                         }
 
                                         // Get Fuel Consumption (assuming fuel_consumed column exists)
-                                        $docControllerFuel = $docControllerEntry ? ($docControllerEntry->fuel_consumed ?? 'N/A') : 'N/A';
-                                        $authUserFuel = $authUserEntry ? ($authUserEntry->fuel_consumed ?? 'N/A') : 'N/A';
+                                        $docControllerFuel = $docControllerEntry ? ($docControllerEntry->fuel_consumption ?? 'N/A') : 'N/A';
+                                        $authUserFuel = $authUserEntry ? ($authUserEntry->fuel_consumption ?? 'N/A') : 'N/A';
 
                                         // Determine text color classes
                                         $workingHoursClass = ($docControllerWorkingHours !== null && $authUserWorkingHours !== null && abs($docControllerWorkingHours) === abs($authUserWorkingHours)) ? 'text-success' : 'text-danger';
@@ -125,6 +125,14 @@
                             $totalDocControllerWorkingHours = $documentControllerTimesheets->sum('working_hours');
                             $totalAuthUserFuel = $authenticatedUserTimesheets->sum('fuel_consumption');
                             $totalDocControllerFuel = $documentControllerTimesheets->sum('fuel_consumption');
+
+                            // Temporary debug output to check fuel_consumption values
+                            // echo "<pre>Authenticated User Fuel Consumption Values:\n";
+                            // print_r($authenticatedUserTimesheets->pluck('fuel_consumption')->toArray());
+                            // echo "</pre>";
+                            // echo "<pre>Document Controller Fuel Consumption Values:\n";
+                            // print_r($documentControllerTimesheets->pluck('fuel_consumption')->toArray());
+                            // echo "</pre>";
                         @endphp
 
                         <div class="mt-4">

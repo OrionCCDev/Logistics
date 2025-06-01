@@ -1,5 +1,23 @@
 <form wire:submit.prevent="save">
     <div class="modal-body">
+        <!-- Session Notification -->
+        @if (session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <!-- Validation Summary -->
         @if(!empty($validation_errors['working_times']) || !empty($validation_errors['odometer']))
         <div class="alert alert-warning" role="alert">
@@ -165,94 +183,151 @@
 
 @push('scripts')
 <script>
+    // Function to initialize Select2 on relevant elements and bind Livewire events
     function initSelect2Livewire() {
         console.log('initSelect2Livewire called');
 
-        // Destroy existing Select2 instances first
         $('.select2-livewire').each(function() {
-            if ($(this).hasClass('select2-hidden-accessible')) {
-                $(this).select2('destroy');
-            }
-        });
+            let $selectElement = $(this);
+            let model = $selectElement.data('model');
 
-        $('.select2-livewire').select2({
-            dropdownParent: $('#exampleModalLarge01'),
-            placeholder: 'Please select...',
-            allowClear: false,
-            width: '100%'
-        }).off('change.select2livewire').on('change.select2livewire', function (e) {
-            let model = $(this).data('model');
-            let value = $(this).val();
+            // Destroy existing Select2 instances first
+            if ($selectElement.hasClass('select2-hidden-accessible')) {
+                 $selectElement.select2('destroy');
+             }
 
-            console.log('Select2 changed:', model, value);
+            // Initialize Select2
+            $selectElement.select2({
+                 dropdownParent: $('#exampleModalLarge01'),
+                 placeholder: 'Please select...',
+                 allowClear: false,
+                 width: '100%'
+            });
 
+            // Bind change event directly to Livewire.set only if model is defined
             if (model) {
-                // Ensure we pass the value even if empty
-                if (value === null || value === undefined) {
-                    value = '';
-                }
-
-                // Use Livewire's set method
-                @this.set(model, value);
-
-                // Also dispatch a custom event to ensure Livewire updates
-                @this.dispatch('select2-updated', { field: model, value: value });
+                 $selectElement.off('change.select2lw').on('change.select2lw', function (e) {
+                     let value = $(this).val();
+                     console.log('Select2 change [' + model + ']:', value);
+                     // Use Livewire's set method directly to update backend property
+                     @this.set(model, value);
+                 });
             }
         });
 
-        // Set initial values from Livewire data after a short delay
-        setTimeout(() => {
-            // Only set values if the elements exist and have Livewire data
-            if ($('#project_id_livewire').length && @this.project_id) {
-                $('#project_id_livewire').val(@this.project_id).trigger('change.select2');
-            }
-            if ($('#vehicle_id_livewire').length && @this.vehicle_id) {
-                $('#vehicle_id_livewire').val(@this.vehicle_id).trigger('change.select2');
-            }
-        }, 200);
+        // After initializing, Select2 should pick up the value from the underlying <select> element,
+        // which is controlled by wire:model. The explicit setting is handled in shown.bs.modal.
     }
 
-    // Initialize when Livewire loads
+    // Initialize when Livewire loads (for initial render if modal is open by default)
     document.addEventListener('livewire:init', function () {
         console.log('Livewire init event fired');
-        setTimeout(initSelect2Livewire, 100);
+        // Use a slight delay to ensure DOM is ready after initial load
+        setTimeout(initSelect2Livewire, 50);
     });
 
-    // Reinitialize after navigation (for SPA-like behavior)
-    document.addEventListener('livewire:navigated', function () {
-        console.log('Livewire navigated event fired');
-        setTimeout(initSelect2Livewire, 100);
-    });
-
-    // Reinitialize after Livewire updates the DOM
-    Livewire.hook('morph.updated', ({ el, component }) => {
-        console.log('Livewire morph updated');
-        setTimeout(initSelect2Livewire, 100);
-    });
-
-    // Ensure Select2 and calculation runs when modal opens
+    // Reinitialize and set values when modal opens
     $('#exampleModalLarge01').on('shown.bs.modal', function () {
-        console.log('Modal shown, reinitializing Select2 and triggering calculation');
-        setTimeout(() => {
-            initSelect2Livewire();
-            if (typeof @this !== 'undefined') {
-                @this.call('calculateWorkingHours');
-            }
-        }, 300);
+        console.log('Modal shown, reinitializing Select2 and setting initial values.');
+
+        // Initialize Select2 instances
+        initSelect2Livewire();
+
+        // Explicitly set initial values from Livewire properties
+        // This is crucial for wire:ignore elements within modals.
+        const projectSelect = $('#project_id_livewire');
+        if (projectSelect.length && @this.project_id) {
+             projectSelect.val(@this.project_id).trigger('change'); // Trigger Select2 to update display
+             console.log('Set Project Select2 value on modal shown to:', @this.project_id);
+        }
+        const vehicleSelect = $('#vehicle_id_livewire');
+        if (vehicleSelect.length && @this.vehicle_id) {
+             vehicleSelect.val(@this.vehicle_id).trigger('change');
+             console.log('Set Vehicle Select2 value on modal shown to:', @this.vehicle_id);
+        }
+         // If vehicle_id is initially empty, ensure Select2 is cleared visually
+        if (vehicleSelect.length && !@this.vehicle_id) {
+             vehicleSelect.val(null).trigger('change');
+             console.log('Cleared Vehicle Select2 value on modal shown.');
+        }
+
+        // Also trigger initial calculation if times are pre-filled
+        if (typeof @this.calculateWorkingHours === 'function') {
+             @this.call('calculateWorkingHours');
+         }
     });
 
-    // Reset Select2 when form is reset
+    // Reset specific fields (vehicle select2, fuel, deduction, note) after save
     document.addEventListener('livewire:init', () => {
         Livewire.on('resetTimesheetFormSelects', () => {
-            console.log('Resetting Select2 selects');
-            $('.select2-livewire').val('').trigger('change.select2');
-            setTimeout(initSelect2Livewire, 100);
+            console.log('Resetting specific fields after save (Vehicle Select2, fuel, deduction, note).');
+
+            // Reset the vehicle select2 visual display to empty
+            const vehicleSelect = $('#vehicle_id_livewire');
+            if (vehicleSelect.data('select2')) {
+                // Use null to clear the selection for allowClear: false
+                vehicleSelect.val(null).trigger('change');
+                console.log('Reset Vehicle Select2 value after save.');
+            }
+
+            // Explicitly reset the fuel consumption input value
+            const fuelInput = $('#fuel_consumption_livewire');
+            if (fuelInput.length) {
+                fuelInput.val('0');
+                console.log('Reset fuel consumption input after save.');
+            }
+
+            // Explicitly reset deduction amount input value
+            const deductionInput = $('#deduction_amount_livewire');
+             if (deductionInput.length) {
+                 deductionInput.val('0');
+                 console.log('Reset deduction amount input after save.');
+             }
+
+            // Explicitly reset note textarea value
+            const noteTextarea = $('#note_livewire');
+             if (noteTextarea.length) {
+                 noteTextarea.val('');
+                 console.log('Reset note textarea after save.');
+             }
+
+            // Project Select2 is intentionally NOT reset here.
+            // Its value is maintained by wire:model and should be picked up on next morph/update.
+            // If it still resets, the issue is likely in Select2/Livewire morphing interaction.
+
+            // Explicitly re-select the project using the current Livewire property value
+            const projectSelect = $('#project_id_livewire');
+            const currentProjectId = @this.project_id;
+            console.log('Attempting to re-select project with ID from Livewire property:', currentProjectId);
+
+            if (projectSelect.length && projectSelect.data('select2')) {
+                // Destroy and re-initialize Select2 might be necessary for wire:ignore elements
+                // to pick up the wire:model value correctly after a Livewire update.
+                // However, let's try just setting the value first.
+
+                if (currentProjectId !== '' && currentProjectId !== null) {
+                     // Use a slight delay to ensure DOM is ready and Select2 is ready
+                    setTimeout(() => {
+                         projectSelect.val(currentProjectId).trigger('change.select2');
+                         console.log('Successfully set and triggered Select2 update for project_id_livewire.');
+                    }, 50); // Short delay
+                } else {
+                     // If project_id is null or empty, clear the selection
+                     setTimeout(() => {
+                         projectSelect.val(null).trigger('change.select2');
+                         console.log('Cleared Project Select2 value.');
+                     }, 50);
+                }
+
+            } else {
+                 console.log('Project Select2 element not found or not initialized when trying to re-select.');
+            }
         });
     });
 
-    // Time input calculation handlers
+    // Time input calculation handlers (keep these)
     document.addEventListener('livewire:init', () => {
-        console.log('Livewire initialized for timesheet form');
+        console.log('Livewire initialized for timesheet form time handlers'); // Added specific log
 
         // Add event listeners to time inputs
         const timeInputs = document.querySelectorAll('input[type="datetime-local"]');
@@ -262,7 +337,10 @@
                 console.log('Time input changed:', this.id, this.value);
                 // Trigger calculation after a short delay to ensure Livewire has updated
                 setTimeout(() => {
-                    @this.call('calculateWorkingHours');
+                    // Check if @this is defined before calling method
+                    if (typeof @this !== 'undefined' && typeof @this.calculateWorkingHours === 'function') {
+                         @this.call('calculateWorkingHours');
+                     }
                 }, 150);
             });
 
@@ -270,7 +348,10 @@
             input.addEventListener('blur', function() {
                 console.log('Time input blur:', this.id, this.value);
                 setTimeout(() => {
-                    @this.call('calculateWorkingHours');
+                     // Check if @this is defined before calling method
+                    if (typeof @this !== 'undefined' && typeof @this.calculateWorkingHours === 'function') {
+                         @this.call('calculateWorkingHours');
+                     }
                 }, 150);
             });
         });
@@ -281,14 +362,29 @@
             breakInput.addEventListener('change', function() {
                 console.log('Break duration changed:', this.value);
                 setTimeout(() => {
-                    @this.call('calculateWorkingHours');
+                     // Check if @this is defined before calling method
+                    if (typeof @this !== 'undefined' && typeof @this.calculateWorkingHours === 'function') {
+                         @this.call('calculateWorkingHours');
+                     }
                 }, 150);
             });
         }
     });
 
-    window.addEventListener('timesheet-saved', function () {
-        window.location.reload();
+    // Listener to restore Project Select2 selection after save
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('restoreProjectSelection', (projectId) => {
+            console.log('restoreProjectSelection event received with project_id:', projectId);
+            const projectSelect = $('#project_id_livewire');
+
+            // Ensure the element exists and Select2 is initialized
+            if (projectSelect.length && projectSelect.data('select2')) {
+                console.log('Restoring Project Select2 value to:', projectId);
+                projectSelect.val(projectId).trigger('change.select2');
+            } else {
+                console.log('Project Select2 element not found or not initialized when trying to restore selection.');
+            }
+        });
     });
 </script>
 @endpush

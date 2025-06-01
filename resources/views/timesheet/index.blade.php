@@ -94,11 +94,6 @@
             }
         });
 
-        Livewire.on('timesheetSaved', () => {
-            $('#exampleModalLarge01').modal('hide');
-            Livewire.emit('refreshTimesheetTable');
-        });
-
         // If you need to reset select2 values when the form is reset by Livewire
         Livewire.on('resetTimesheetFormSelects', () => {
             // This event would need to be dispatched from your component's resetForm method

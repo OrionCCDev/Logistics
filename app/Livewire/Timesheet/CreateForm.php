@@ -418,6 +418,9 @@ class CreateForm extends Component
             throw $e;
         }
 
+        // Capture the project_id before potentially resetting other fields
+        $savedProjectId = $this->project_id;
+
         $breakDurationInMinutes = 0;
         if (!empty($this->break_duration_hours) && is_numeric($this->break_duration_hours)) {
             $breakDurationInHours = (float) $this->break_duration_hours;
@@ -445,9 +448,20 @@ class CreateForm extends Component
             ]);
 
             session()->flash('success', 'Timesheet entry created successfully.');
-            $this->dispatch('timesheetSaved');
+            $this->dispatch('timesheetSaved', ['project_id' => $this->project_id]);
             $this->dispatch('timesheet-saved');
-            $this->resetForm();
+
+            // Manually reset specific fields (keep project and vehicle)
+            $this->fuel_consumption_status = 'by_hours';
+            $this->fuel_consumption = '0';
+            $this->deduction_amount = '0';
+            $this->note = '';
+
+            // Dispatch event to reset Select2 and other specific form parts visually
+            $this->dispatch('resetTimesheetFormSelects');
+
+            // Dispatch event to specifically restore the project selection after reset
+            $this->dispatch('restoreProjectSelection', project_id: $savedProjectId);
 
             Log::info('Timesheet saved successfully');
 

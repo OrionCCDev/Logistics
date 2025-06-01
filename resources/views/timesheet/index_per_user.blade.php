@@ -112,36 +112,25 @@
 
 @push('scripts')
 <script>
-    // Listen for the timesheet-saved event globally on the Livewire bus
-    Livewire.on('timesheet-saved', function () {
-        console.log('[DEBUG] Timesheet saved event received. Attempting to close modal and reload.');
-
-        // Find the modal element using its ID
-        var modalElement = $('#exampleModalLarge01');
-
-        console.log('[DEBUG] Modal element found:', modalElement.length > 0);
-
-        // Check if the modal element exists and is currently shown
-        if (modalElement.length > 0 && modalElement.hasClass('show')) {
-             console.log('[DEBUG] Modal found and is visible. Hiding modal.');
-            // Use Bootstrap's modal method to hide the modal
-            modalElement.modal('hide');
-
-            // Add a small delay before reloading to ensure modal close animation starts
-            // Adjust delay if needed based on animation speed
-            setTimeout(function() {
-                console.log('[DEBUG] Reloading page...');
-                window.location.reload();
-            }, 400); // Increased delay slightly
-        } else {
-            console.log('[DEBUG] Modal not found or not currently visible. Proceeding to reload page.');
-            // If modal is not visible, just reload the page
-             window.location.reload();
-        }
-    });
+    // Remove this listener to prevent the modal from closing after save
+    // Livewire.on('timesheet-saved', function () {
+    //     console.log('[DEBUG] Timesheet saved event received. Attempting to close modal and reload.');
+    //     var modalElement = $('#exampleModalLarge01');
+    //     console.log('[DEBUG] Modal element found:', modalElement.length > 0);
+    //     if (modalElement.length > 0 && modalElement.hasClass('show')) {
+    //          console.log('[DEBUG] Modal found and is visible. Hiding modal.');
+    //         modalElement.modal('hide');
+    //         setTimeout(function() {
+    //             console.log('[DEBUG] Reloading page...');
+    //             window.location.reload();
+    //         }, 400); // Increased delay slightly
+    //     } else {
+    //         console.log('[DEBUG] Modal not found or not currently visible. Proceeding to reload page.');
+    //          window.location.reload();
+    //     }
+    // });
 
     // Optional: Re-initialize any necessary JS (like Select2) when modal is shown
-    // The Livewire component itself might handle this, but this is a fallback
     $('#exampleModalLarge01').on('shown.bs.modal', function () {
         console.log('Modal shown.');
         // You might add logic here to wait for the Livewire component to be ready
