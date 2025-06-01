@@ -156,4 +156,19 @@ class ProjectController extends Controller
 
         return view('projects.fuel_consumption_print', compact('project', 'timesheets', 'totalFuelConsumption', 'totalWorkingHours'));
     }
+
+    public function projectTimesheets(Request $request, Project $project)
+    {
+        $fromDate = $request->query('fromDate', now()->startOfMonth()->toDateString());
+        $toDate = $request->query('toDate', now()->endOfMonth()->toDateString());
+
+        $timesheets = TimesheetDaily::with('vehicle')
+            ->where('project_id', $project->id)
+            ->whereBetween('working_start_hour', [$fromDate, $toDate])
+            ->where('working_hours', '>', 0)
+            ->orderBy('working_start_hour', 'desc')
+            ->paginate(15);
+
+        return view('projects.project_timesheets', compact('project', 'fromDate', 'toDate', 'timesheets'));
+    }
 }

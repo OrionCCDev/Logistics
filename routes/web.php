@@ -20,6 +20,7 @@ use App\Models\Vehicle;
 use App\Models\Operator;
 use App\Models\TimesheetDaily;
 use App\Livewire\ReportsPage;
+use App\Livewire\ProjectVehicleTimesheetTable;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -51,16 +52,19 @@ Route::middleware('auth')->group(function () {
             Route::get('suppliers/{supplier}/get-vehicles', [SupplierController::class, 'getSupplierVehicles'])->name('suppliers.get_vehicles');
             Route::resource('timesheet', TimesheetDailyController::class)->parameters([
                 'timesheet' => 'timesheetDaily'
-            ]);
+            ])->except(['create', 'store']);
             Route::get('vehicles/{vehicle}/project/{project}/timesheet', [VehicleController::class, 'projectTimesheet'])->name('vehicles.project.timesheet');
             // Vehicle specific timesheet creation
             Route::post('vehicles/{vehicle}/timesheets', [VehicleTimesheetController::class, 'storeForVehicle'])->name('timesheets.storeForVehicle');
 
             Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
             Route::get('reports', [App\Http\Controllers\ReportsController::class, 'index'])->name('reports.index');
+            Route::get('projects/{project}/timesheets', [App\Http\Controllers\ProjectController::class, 'projectTimesheets'])->name('projects.timesheets');
         });
 
-
+        Route::resource('timesheet', TimesheetDailyController::class)->parameters([
+            'timesheet' => 'timesheetDaily'
+        ])->only(['create', 'store']);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

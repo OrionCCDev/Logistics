@@ -1308,6 +1308,7 @@
     @stack('modals')
     @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     @livewireScripts
+    <script src="https://unpkg.com/alpinejs" defer></script>
 </body>
 
 </html>
