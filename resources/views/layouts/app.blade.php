@@ -842,7 +842,6 @@
                             </a>
                         </div>
                     </li>
-                    @endif
                     <li class="nav-item">
                         <a href="{{ route('analytics.index') }}" class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}">
                             <i class="fas fa-chart-bar"></i>
@@ -861,6 +860,20 @@
                             <span>Invoices</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('compare.index') }}" class="nav-link">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Compare</span>
+                        </a>
+                    </li>
+                    @endif
+                    <li class="nav-item">
+                        <a href="{{ route('timesheet.indexPerUser') }}" class="nav-link {{ request()->routeIs('timesheet.indexPerUser') ? 'active' : '' }}">
+                            <i class="fas fa-user-clock"></i>
+                            <span>My Timesheet</span>
+                        </a>
+                    </li>
+
                 </ul>
 
                 <!-- Right Side Actions -->
@@ -870,7 +883,7 @@
                         <i class="fas fa-cog"></i>
                     </button>
 
-                    <!-- Notifications -->
+                    {{--  <!-- Notifications -->
                     <div class="dropdown">
                         <button class="icon-button" onclick="toggleDropdown(event)">
                             <i class="fas fa-bell"></i>
@@ -897,7 +910,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </div>  --}}
 
                     <!-- User Menu -->
                     <div class="dropdown">
@@ -1306,8 +1319,8 @@
     {{-- End Page Specific Scripts section --}}
 
     @stack('modals')
-    @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     @livewireScripts
+    @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     <script src="https://unpkg.com/alpinejs" defer></script>
 </body>
 

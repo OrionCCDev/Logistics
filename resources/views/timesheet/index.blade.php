@@ -38,89 +38,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle">
-                    <thead class="thead-light">
-                        <tr>
-
-                            <th>Created By</th>
-                            <th>Date</th>
-                            <th>Project</th>
-                            <th>Vehicle</th>
-                            <th>Work Hours</th>
-                            <th>Supplier</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($timesheets as $timesheet)
-                        <tr>
-
-                            <td>{{ $timesheet->user?->name ?? 'N/A' }}</td>
-                            <td>{{ $timesheet->date ? $timesheet->date->format('d M, Y') : 'N/A' }}</td>
-                            <td>{{ $timesheet->project?->name ?? 'N/A' }}</td>
-                            <td>{{ $timesheet->vehicle?->plate_number ?? 'N/A' }}</td>
-                            <td>{{ $timesheet->working_hours ?? 'N/A' }}</td>
-                            <td>{{ $timesheet->vehicle?->supplier?->name ?? 'N/A' }}</td>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{{ route('timesheet.show', $timesheet->id) }}"
-                                        class="btn btn-success btn-sm" title="View">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('timesheet.edit', $timesheet->id) }}" class="btn btn-info btn-sm"
-                                        title="Edit">
-                                        <i class="fa fa-pencil"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-danger btn-sm" title="Delete"
-                                        data-toggle="modal" data-target="#deleteTimesheetModal{{ $timesheet->id }}">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </div>
-                                <!-- Delete Confirmation Modal -->
-                                <div class="modal fade" id="deleteTimesheetModal{{ $timesheet->id }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="deleteTimesheetModalLabel{{ $timesheet->id }}"
-                                    aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title"
-                                                    id="deleteTimesheetModalLabel{{ $timesheet->id }}">Confirm Delete
-                                                </h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                Are you sure you want to delete this timesheet entry for {{
-                                                $timesheet->date->format('d M, Y') }}?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-dismiss="modal">Cancel</button>
-                                                <form action="{{ route('timesheet.destroy', $timesheet->id) }}"
-                                                    method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No timesheet entries found.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-3">
-                {{ $timesheets->links('pagination::bootstrap-4') }}
+                @livewire('timesheet.timesheet-table')
             </div>
         </section>
     </div>
@@ -178,10 +96,7 @@
 
         Livewire.on('timesheetSaved', () => {
             $('#exampleModalLarge01').modal('hide');
-            // Optionally, you can dispatch an event to refresh a list component
-            // Livewire.dispatch('refreshTimesheetList');
-            // For now, reloading the page:
-            window.location.reload();
+            Livewire.emit('refreshTimesheetTable');
         });
 
         // If you need to reset select2 values when the form is reset by Livewire

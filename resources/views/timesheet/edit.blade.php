@@ -245,8 +245,8 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Update Timesheet') }}
                                 </button>
-                                <a href="{{ $timesheet->vehicle ? route('vehicles.show', $timesheet->vehicle_id) : route('timesheets.index') }}" class="btn btn-secondary">
-                                    {{ __('Cancel') }}
+                                <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                                    {{ __('Back') }}
                                 </a>
                             </div>
                         </div>

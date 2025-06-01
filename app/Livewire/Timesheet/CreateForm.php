@@ -60,9 +60,28 @@ class CreateForm extends Component
     #[Rule('nullable|string')]
     public $note = '';
 
+    // Add listeners for Select2 events
+    protected $listeners = [
+        'select2-updated' => 'handleSelect2Update',
+        'resetTimesheetFormSelects' => '$refresh'
+    ];
+
     public function mount()
     {
-        $this->projects = Project::orderBy('name')->get();
+        $user = Auth::user();
+        if ($user->role === 'orionDC') {
+            // Assuming a user has one assigned project via a relationship or attribute
+            $assignedProject = $user->employee->projects->first() ?? null;
+            if ($assignedProject) {
+                $this->projects = collect([$assignedProject]);
+                $this->project_id = $assignedProject->id;
+            } else {
+                $this->projects = collect();
+                $this->project_id = '';
+            }
+        } else {
+            $this->projects = Project::orderBy('name')->get();
+        }
         $this->vehicles = Vehicle::orderBy('plate_number')->get();
         $this->date = now()->format('Y-m-d');
         $this->working_start_hour = now()->setHour(6)->setMinute(0)->setSecond(0)->format('Y-m-d\TH:i');
@@ -71,10 +90,60 @@ class CreateForm extends Component
         $this->calculateWorkingHours();
     }
 
+    // Specific updaters for Select2 fields
+    public function updatedProjectId($value)
+    {
+        Log::info('Project ID updated via Livewire:', ['value' => $value, 'type' => gettype($value)]);
+
+        if ($value !== '' && $value !== null) {
+            $this->project_id = (int) $value;
+        } else {
+            $this->project_id = '';
+        }
+
+        $this->clearValidationError('project_id');
+        Log::info('Project ID after processing:', ['value' => $this->project_id]);
+    }
+
+    public function updatedVehicleId($value)
+    {
+        Log::info('Vehicle ID updated via Livewire:', ['value' => $value, 'type' => gettype($value)]);
+
+        if ($value !== '' && $value !== null) {
+            $this->vehicle_id = (int) $value;
+        } else {
+            $this->vehicle_id = '';
+        }
+
+        $this->clearValidationError('vehicle_id');
+        Log::info('Vehicle ID after processing:', ['value' => $this->vehicle_id]);
+    }
+
+    // Handle Select2 updates
+    public function handleSelect2Update($data = null)
+    {
+        if (!$data) return;
+
+        if ($data['field'] === 'project_id') {
+            $this->project_id = $data['value'] !== '' ? (int) $data['value'] : '';
+            $this->clearValidationError('project_id');
+        }
+
+        if ($data['field'] === 'vehicle_id') {
+            $this->vehicle_id = $data['value'] !== '' ? (int) $data['value'] : '';
+            $this->clearValidationError('vehicle_id');
+        }
+    }
+
     // Use updated() method instead of individual updatedProperty methods
     public function updated($propertyName)
     {
         Log::info("Property updated: $propertyName");
+
+        // Skip if already handled by specific updaters
+        if (in_array($propertyName, ['project_id', 'vehicle_id'])) {
+            return;
+        }
 
         // Clear previous validation errors for the updated field
         $this->clearValidationError($propertyName);
@@ -101,6 +170,10 @@ class CreateForm extends Component
         }
         if (in_array($propertyName, ['odometer_start', 'odometer_ends'])) {
             $this->validation_errors['odometer'] = '';
+        }
+        if (in_array($propertyName, ['project_id', 'vehicle_id'])) {
+            // Clear Laravel validation errors for these fields
+            $this->resetErrorBag($propertyName);
         }
     }
 
@@ -247,6 +320,31 @@ class CreateForm extends Component
         Log::info('Manual calculation triggered');
     }
 
+    // Debug method to check current values
+    public function debugFormData()
+    {
+        $debugData = [
+            'project_id' => $this->project_id,
+            'vehicle_id' => $this->vehicle_id,
+            'project_id_type' => gettype($this->project_id),
+            'vehicle_id_type' => gettype($this->vehicle_id),
+            'project_id_empty' => empty($this->project_id),
+            'vehicle_id_empty' => empty($this->vehicle_id),
+            'date' => $this->date,
+            'working_start_hour' => $this->working_start_hour,
+            'working_end_hour' => $this->working_end_hour,
+            'break_duration_hours' => $this->break_duration_hours,
+            'working_hours' => $this->working_hours,
+        ];
+
+        Log::info('Debug form data:', $debugData);
+
+        // Also dispatch to frontend console
+        $this->dispatch('console-log', $debugData);
+
+        return $debugData;
+    }
+
     // Add a test method to debug the exact values
     public function testTimeCalculation()
     {
@@ -275,6 +373,26 @@ class CreateForm extends Component
 
     public function save()
     {
+        Log::info('=== SAVE METHOD CALLED ===');
+        Log::info('Form data before validation:', [
+            'project_id' => $this->project_id,
+            'vehicle_id' => $this->vehicle_id,
+            'project_id_type' => gettype($this->project_id),
+            'vehicle_id_type' => gettype($this->vehicle_id),
+            'project_id_empty' => empty($this->project_id),
+            'vehicle_id_empty' => empty($this->vehicle_id),
+        ]);
+
+        // Ensure IDs are properly formatted for validation
+        if ($this->project_id !== '' && $this->project_id !== null) {
+            $this->project_id = (int) $this->project_id;
+        }
+
+        if ($this->vehicle_id !== '' && $this->vehicle_id !== null) {
+            $this->vehicle_id = (int) $this->vehicle_id;
+        }
+
+        // Custom validations first
         $timeValidation = $this->validateTimes();
         $odometerValidation = $this->validateOdometer();
 
@@ -283,7 +401,22 @@ class CreateForm extends Component
             return;
         }
 
-        $this->validate();
+        // Laravel validation
+        try {
+            $this->validate();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed:', [
+                'errors' => $e->errors(),
+                'current_data' => [
+                    'project_id' => $this->project_id,
+                    'vehicle_id' => $this->vehicle_id,
+                ]
+            ]);
+
+            // Flash error message for user
+            session()->flash('error', 'Please check all required fields and try again.');
+            throw $e;
+        }
 
         $breakDurationInMinutes = 0;
         if (!empty($this->break_duration_hours) && is_numeric($this->break_duration_hours)) {
@@ -293,26 +426,39 @@ class CreateForm extends Component
             }
         }
 
-        TimesheetDaily::create([
-            'user_id' => Auth::id(),
-            'project_id' => $this->project_id,
-            'vehicle_id' => $this->vehicle_id,
-            'date' => $this->date,
-            'working_start_hour' => Carbon::parse($this->working_start_hour),
-            'working_end_hour' => Carbon::parse($this->working_end_hour),
-            'break_duration_minutes' => $breakDurationInMinutes,
-            'working_hours' => (float) $this->working_hours,
-            'odometer_start' => $this->odometer_start,
-            'odometer_ends' => $this->odometer_ends,
-            'fuel_consumption_status' => $this->fuel_consumption_status,
-            'fuel_consumption' => $this->fuel_consumption,
-            'deduction_amount' => $this->deduction_amount ?: 0,
-            'note' => $this->note,
-        ]);
+        try {
+            TimesheetDaily::create([
+                'user_id' => Auth::id(),
+                'project_id' => $this->project_id,
+                'vehicle_id' => $this->vehicle_id,
+                'date' => $this->date,
+                'working_start_hour' => Carbon::parse($this->working_start_hour),
+                'working_end_hour' => Carbon::parse($this->working_end_hour),
+                'break_duration_minutes' => $breakDurationInMinutes,
+                'working_hours' => (float) $this->working_hours,
+                'odometer_start' => $this->odometer_start,
+                'odometer_ends' => $this->odometer_ends,
+                'fuel_consumption_status' => $this->fuel_consumption_status,
+                'fuel_consumption' => $this->fuel_consumption,
+                'deduction_amount' => $this->deduction_amount ?: 0,
+                'note' => $this->note,
+            ]);
 
-        session()->flash('success', 'Timesheet entry created successfully.');
-        $this->dispatch('timesheetSaved');
-        $this->resetForm();
+            session()->flash('success', 'Timesheet entry created successfully.');
+            $this->dispatch('timesheetSaved');
+            $this->dispatch('timesheet-saved');
+            $this->resetForm();
+
+            Log::info('Timesheet saved successfully');
+
+        } catch (\Exception $e) {
+            Log::error('Error saving timesheet:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            session()->flash('error', 'An error occurred while saving. Please try again.');
+        }
     }
 
     public function resetForm()

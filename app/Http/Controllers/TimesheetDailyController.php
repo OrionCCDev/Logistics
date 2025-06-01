@@ -44,8 +44,8 @@ class TimesheetDailyController extends Controller
             'date' => ['required', 'date', Rule::unique('timesheet_dailies')->where(function ($query) use ($request) {
                 return $query->where('user_id', $request->user_id);
             })->ignore(null, 'id')],
-            'project_id' => 'nullable|exists:projects,id',
-            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'project_id' => 'required|exists:projects,id',
+            'vehicle_id' => 'required|exists:vehicles,id',
             'working_start_hour' => 'nullable|date',
             'working_end_hour' => 'nullable|date|after_or_equal:working_start_hour',
             'break_duration_hours' => 'nullable|numeric|min:0|max:24',
@@ -165,5 +165,18 @@ class TimesheetDailyController extends Controller
         $timesheet = TimesheetDaily::findOrFail($id);
         $timesheet->delete();
         return redirect()->route('timesheet.index')->with('success', 'Timesheet entry deleted successfully.');
+    }
+
+    /**
+     * Display a listing of the authenticated user's timesheets.
+     */
+    public function indexPerUser()
+    {
+        $user = Auth::user();
+        $timesheets = TimesheetDaily::with(['project', 'vehicle'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+        return view('timesheet.index_per_user', compact('timesheets'));
     }
 }

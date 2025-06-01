@@ -1,31 +1,27 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Timesheet;
 
-use App\Models\Vehicle;
 use App\Models\TimesheetDaily;
 use App\Models\Project;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log;
 
-class VehicleTimesheetTable extends Component
+class TimesheetTable extends Component
 {
     use WithPagination;
 
-    public Vehicle $vehicle;
     public $perPage = 10;
     public $sortField = 'date';
     public $sortDirection = 'desc';
     public $search = '';
-    public $timesheetIdToDelete = null;
     public $projectFilter = '';
     public $projects = [];
     public $thisMonthOnly = false;
+    public $timesheetIdToDelete = null;
+    public $page = 1;
 
-    // Listener for the event from the form component
     protected $listeners = [
-        'timesheetCreated' => '$refresh',
         'refreshTimesheetTable' => '$refresh',
     ];
 
@@ -36,9 +32,8 @@ class VehicleTimesheetTable extends Component
         'sortDirection' => ['except' => 'desc'],
     ];
 
-    public function mount(Vehicle $vehicle)
+    public function mount()
     {
-        $this->vehicle = $vehicle;
         $this->projects = Project::orderBy('name')->get();
     }
 
@@ -50,7 +45,7 @@ class VehicleTimesheetTable extends Component
             $this->sortDirection = 'asc';
         }
         $this->sortField = $field;
-        $this->resetPage(); // Reset to page 1 when sorting
+        $this->resetPage();
     }
 
     public function updatingSearch()
@@ -75,26 +70,19 @@ class VehicleTimesheetTable extends Component
 
     public function deleteTimesheet()
     {
-        Log::info('VehicleTimesheetTable: deleteTimesheet called with ID to delete: ' . $this->timesheetIdToDelete);
         if ($this->timesheetIdToDelete) {
             $timesheet = TimesheetDaily::find($this->timesheetIdToDelete);
             if ($timesheet) {
-                Log::info('VehicleTimesheetTable: Found timesheet entry to delete: ', $timesheet->toArray());
                 try {
-                    $timesheet->delete(); // This performs the soft delete
-                    Log::info('VehicleTimesheetTable: Timesheet entry soft deleted successfully.');
+                    $timesheet->delete();
                     session()->flash('message', 'Timesheet entry deleted successfully.');
                 } catch (\Exception $e) {
-                    Log::error('VehicleTimesheetTable: Error deleting timesheet entry: ' . $e->getMessage());
                     session()->flash('error', 'Error deleting timesheet entry: ' . $e->getMessage());
                 }
             } else {
-                Log::warning('VehicleTimesheetTable: Could not find timesheet entry to delete with ID: ' . $this->timesheetIdToDelete);
                 session()->flash('error', 'Could not find timesheet entry to delete.');
             }
             $this->timesheetIdToDelete = null;
-        } else {
-            Log::warning('VehicleTimesheetTable: deleteTimesheet called but timesheetIdToDelete is null.');
         }
     }
 
@@ -112,8 +100,7 @@ class VehicleTimesheetTable extends Component
 
     public function render()
     {
-        $query = TimesheetDaily::where('vehicle_id', $this->vehicle->id)
-            ->with('project')
+        $query = TimesheetDaily::with(['project', 'vehicle', 'user'])
             ->when($this->search, function ($q) {
                 $q->where(function ($subQuery) {
                     $subQuery->where('date', 'like', '%' . $this->search . '%')
@@ -132,9 +119,10 @@ class VehicleTimesheetTable extends Component
             });
 
         $timesheets = $query->orderBy($this->sortField, $this->sortDirection)
+                             ->orderBy('created_at', 'desc')
                              ->paginate($this->perPage);
 
-        return view('livewire.vehicle-timesheet-table', [
+        return view('livewire.timesheet.timesheet-table', [
             'timesheets' => $timesheets,
             'projects' => $this->projects,
         ]);

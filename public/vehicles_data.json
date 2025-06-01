@@ -1,0 +1,1987 @@
+[
+  {
+    "plate_number": "14295",
+    "vehicle_type": "Trailer-Lowbed",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "14301",
+    "vehicle_type": "Trailer",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "14304",
+    "vehicle_type": "Trailer",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "60736",
+    "vehicle_type": "Trailer",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "58399",
+    "vehicle_type": "Trailer",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "30953",
+    "vehicle_type": "Majari Tanker",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "63727",
+    "vehicle_type": "Pickup 1.5 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "18592",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "88031",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "39164",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "53467",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "38424",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "75624",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "52507",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "76995",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "71894",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "56913",
+    "vehicle_type": "Pickup 3 Ton",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "77286",
+    "vehicle_type": "Diesel Tanker",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "84467",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "17298",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "18137",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "28018",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "52133",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "65414",
+    "vehicle_type": "Bus-Ashok land",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "92390",
+    "vehicle_type": "Bus-Small",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "14292",
+    "vehicle_type": "Bus-Small",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "98621",
+    "vehicle_type": "Bus-Small",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "CO-01",
+    "vehicle_type": "Air Compressor",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK246",
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "295",
+    "vehicle_type": "Air Compressor",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "AC-330",
+    "vehicle_type": "Air Compressor",
+    "supplier_name": "OCC",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "BR-01",
+    "vehicle_type": "BABY ROLLER",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK245"
+    ]
+  },
+  {
+    "plate_number": "10953",
+    "vehicle_type": "BABY ROLLER",
+    "supplier_name": "OCC",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "23009",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Oasis",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "84486",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "OMI Transport",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "48357",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "74425",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "82559",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "39588",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Oasis",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "41894",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Oasis",
+    "projects": [
+      "RAK246",
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "72069",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Al Bahar transport",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "71648",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "60847",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "AZEEM TRANSPORT",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "79151",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "65857",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "52675",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "52676",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "52677",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK246",
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "31741",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Al Soqour Transport",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "65872",
+    "vehicle_type": "Bob cat 216",
+    "supplier_name": "Orion",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "26109",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "17294",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Muhammad Younis",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "53856",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "71940",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "omi",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "51426",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "AZEEM TRANSPORT",
+    "projects": [
+      "RAK247"
+    ]
+  },
+  {
+    "plate_number": "98742",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "98526",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "82804",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "omi",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "55230",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Naham",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "10487",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Soqour Transport",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "48364",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "46385",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "98571",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "imad transport",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "32446",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Omi",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "46387",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "12396",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "89130",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "49201",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "AL GHAZI",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "72033",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "72823",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Sher Khan",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "23579",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "28754",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Soqour Transport",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "60441",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "31738",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Al Soqour Transport",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "72338",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "imad transport",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "51434",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "49329",
+    "vehicle_type": "Boom Loader (540)",
+    "supplier_name": "OMI",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "27793",
+    "vehicle_type": "Grader",
+    "supplier_name": "ERC TRANSPORT",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "82486",
+    "vehicle_type": "Grader",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "32486",
+    "vehicle_type": "Grader",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "23077",
+    "vehicle_type": "Crane",
+    "supplier_name": "Ahmed Adil",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "13905",
+    "vehicle_type": "Crane",
+    "supplier_name": "Al Hilal Transport",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "52016",
+    "vehicle_type": "Crane",
+    "supplier_name": "Al Nuaimi",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "27609",
+    "vehicle_type": "Crane",
+    "supplier_name": "Al Rasmi",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "24775",
+    "vehicle_type": "Crane",
+    "supplier_name": "OMI",
+    "projects": [
+      "RAK242",
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "54224",
+    "vehicle_type": "Crane",
+    "supplier_name": "Ahmed Adil",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "30374",
+    "vehicle_type": "Crane",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "33723",
+    "vehicle_type": "Crane",
+    "supplier_name": "G Therm",
+    "projects": [
+      "RAK257",
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "66713",
+    "vehicle_type": "Crane",
+    "supplier_name": "Al Hilal Transport",
+    "projects": [
+      "RAK249",
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "91576",
+    "vehicle_type": "Crane",
+    "supplier_name": "G Therm",
+    "projects": [
+      "RAK247"
+    ]
+  },
+  {
+    "plate_number": "48710",
+    "vehicle_type": "Crane",
+    "supplier_name": "Al Salih Electro mech",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "40034",
+    "vehicle_type": "Crane",
+    "supplier_name": "Pure Piling",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "M.C.2",
+    "vehicle_type": "Crane",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "15849",
+    "vehicle_type": "Crane 160 T",
+    "supplier_name": "Al Nuaimi",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "68005",
+    "vehicle_type": "Excavator (LONG BOOM)",
+    "supplier_name": "Al Mutawa",
+    "projects": [
+      "RAK222"
+    ]
+  },
+  {
+    "plate_number": "14827",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK222"
+    ]
+  },
+  {
+    "plate_number": "61304",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "Sher Khan",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "78850",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "OMI Transport",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "61305",
+    "vehicle_type": "Excavator (PC 400)",
+    "supplier_name": "Ahmed Turki",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "56312",
+    "vehicle_type": "Excavator (T-E)",
+    "supplier_name": "ASIAN TRANSPORT",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "38419",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "Al Sahil",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "99826",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Sher Khan",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "39384",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "74899",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Sher khan",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "68841",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "54537",
+    "vehicle_type": "FORKLIFT",
+    "supplier_name": "AL ERFAN",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "GEN-83526",
+    "vehicle_type": "Generator (10KVA",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "GEN#25",
+    "vehicle_type": "Generator (62KVA",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "GEN-6",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "GEN-10",
+    "vehicle_type": "Generator (100 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "#080",
+    "vehicle_type": "Generator (100 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "GEN-24",
+    "vehicle_type": "Generator(100KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "SG-200",
+    "vehicle_type": "Generator(100KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "Gen-11",
+    "vehicle_type": "Generator (110 Kva)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "Gen-07",
+    "vehicle_type": "Generator (110 Kva)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK247"
+    ]
+  },
+  {
+    "plate_number": "Gen-12",
+    "vehicle_type": "Generator (110 Kva)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "G-01",
+    "vehicle_type": "Generator (110 Kva)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "GEN#29",
+    "vehicle_type": "Generator (150KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "GEN-28",
+    "vehicle_type": "Generator(160KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "GEN-05",
+    "vehicle_type": "Generator(160KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "SG-189",
+    "vehicle_type": "Generator(160KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "GEN-26",
+    "vehicle_type": "Generator(160KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK247"
+    ]
+  },
+  {
+    "plate_number": "7458J BIG",
+    "vehicle_type": "Generator (275 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "CA-098",
+    "vehicle_type": "Generator (165 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "CJ-159",
+    "vehicle_type": "Generator (165 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "SG-188",
+    "vehicle_type": "Generator (165 KVa)",
+    "supplier_name": "FOUR STAR",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "7462J",
+    "vehicle_type": "Generator (275 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "GEN#23",
+    "vehicle_type": "Generator (250 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "GEN#19",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "143",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "WPSP-275",
+    "vehicle_type": "Generator (275 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "208",
+    "vehicle_type": "Generator (275 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "209",
+    "vehicle_type": "Generator (275 KVa)",
+    "supplier_name": "Genesis",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "367",
+    "vehicle_type": "Generator (10 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "WPSD-110",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "G.0365",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "WPSD-66",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "WPSP-388",
+    "vehicle_type": "Generator (110 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "KUBOTA/27",
+    "vehicle_type": "Generator (10 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "Yanmar/36",
+    "vehicle_type": "Generator (10 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "G-123",
+    "vehicle_type": "Generator (10 KVa)",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "W.009",
+    "vehicle_type": "water pump",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "C/ 13956",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "Orion",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "13867",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK247"
+    ]
+  },
+  {
+    "plate_number": "50524",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "12602",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "66591",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "Al Soqour Transport",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "31902",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "47728",
+    "vehicle_type": "JCB (3CX)",
+    "supplier_name": "ASIAN TRANSPORT",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "JNS-15",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Jhon Son",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "JNS-25",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Jhon Son",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "86JX/137",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "Z/80/189",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "45jx/236",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "BT-220-19051",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Middle East",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "G85/548",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "Z80/63",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "B-3000-1969",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "B3000-5675",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "SG01183",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "S60J",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "SG01813",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "Djx/1639",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "DZ43",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "SL-040",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "S60D3304",
+    "vehicle_type": "Main lift",
+    "supplier_name": "AL SEDRA",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "227",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "568",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "SG07963",
+    "vehicle_type": "Main lift",
+    "supplier_name": "CDHorison",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "SG09888",
+    "vehicle_type": "Main lift",
+    "supplier_name": "CDHorison",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "SG01011",
+    "vehicle_type": "Main lift",
+    "supplier_name": "CDHorison",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "SG07918",
+    "vehicle_type": "Main lift",
+    "supplier_name": "CDHorison",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "300004687",
+    "vehicle_type": "Main lift",
+    "supplier_name": "CDHorison",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "330",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Jhon Son",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "66JX-411",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "G855-12749",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "03001050990/600 AJ",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Bhatia Brothers",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "DBT 160-13017",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Middle East",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "S65X 540",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "TD-104265",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Mr.Thamer",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TD104266",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Mr.Thamer",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TB-66J",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Mr.Thamer",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "45jx/260",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Rapid Access",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "DZ25",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "SL-42",
+    "vehicle_type": "Sissior Lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "T4725",
+    "vehicle_type": "Sissior Lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "4710",
+    "vehicle_type": "Sissior Lift",
+    "supplier_name": "Mr.Thamer",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TD104265",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Delta",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "2657",
+    "vehicle_type": "Main lift",
+    "supplier_name": "Naffco",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "41718",
+    "vehicle_type": "Piling machine",
+    "supplier_name": "Pure Piling",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "58195",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "AL SHAMIL",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "68163",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Gargash Equipment",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "713919",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "58772",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "71485",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Sea Coral",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "64995",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Sher Khan",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "95422",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "63983",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "64502",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "ERC TRANSPORT",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "64796",
+    "vehicle_type": "Roller Machine",
+    "supplier_name": "ERC TRANSPORT",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "38394",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "59672",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Al Tannaf",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "17019",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK246",
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "61586",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "OMI",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "35816",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "38397",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "18030",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "Ahmed Turki",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "39748",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "35812",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "26589",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "Abdul waheed",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "39403",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "61534",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "al Saqar Transport",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "95391",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Sher Khan",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "87336",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "65237",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "84420",
+    "vehicle_type": "Excavator (EC210BLC)",
+    "supplier_name": "Al Azam Transport",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "51986",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "OCC",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "83557",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "Mazid Building",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "68840",
+    "vehicle_type": "Shovel (CAT950)",
+    "supplier_name": "OCC",
+    "projects": [
+      "SH-007"
+    ]
+  },
+  {
+    "plate_number": "63407",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Fauji Transport",
+    "projects": [
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "10321",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Fauji Transport",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "64734",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "AHMED HASSAN",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "67724",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Ahmad Hassan",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "82024",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Al Mafraq",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "64758",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Al Mafraq",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "13579",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Al Mafraq",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "89556",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Ahmad Hassan",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "10274",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Fauji Transport",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "11207",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Jabal Jaish",
+    "projects": [
+      "RAK254",
+      "RAK255"
+    ]
+  },
+  {
+    "plate_number": "23201",
+    "vehicle_type": "Six Wheel",
+    "supplier_name": "Ahmad Hassan",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "AL-4000",
+    "vehicle_type": "Tower light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK250"
+    ]
+  },
+  {
+    "plate_number": "TL-01",
+    "vehicle_type": "Tower light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TL-02",
+    "vehicle_type": "Tower light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TL-0107",
+    "vehicle_type": "Tower light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "TL-03",
+    "vehicle_type": "Tower light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK254"
+    ]
+  },
+  {
+    "plate_number": "TL-04",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "TL-71",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "TL-0139",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "TL-0126",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "TL-0127",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001"
+    ]
+  },
+  {
+    "plate_number": "TL-0123",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "AG-001",
+      "RAK257"
+    ]
+  },
+  {
+    "plate_number": "TL-110",
+    "vehicle_type": "Tower Light",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK246"
+    ]
+  },
+  {
+    "plate_number": "83987",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Al Taj Water",
+    "projects": [
+      "RAK249"
+    ]
+  },
+  {
+    "plate_number": "79675",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Al Taj Water",
+    "projects": [
+      "RAK248"
+    ]
+  },
+  {
+    "plate_number": "97534",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Orion",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "51437",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Al Taj Water",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "50582",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Al Taj Water",
+    "projects": [
+      "RAK242"
+    ]
+  },
+  {
+    "plate_number": "21961",
+    "vehicle_type": "Water Tanker",
+    "supplier_name": "Al Taj Water",
+    "projects": [
+      "RAK242"
+    ]
+  }
+]

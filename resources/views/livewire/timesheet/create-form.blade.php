@@ -19,13 +19,21 @@
             <div class="col-md-4">
                 <label for="project_id_livewire">Project</label>
                 <div wire:ignore>
-                    <select class="form-control custom-select form-control-lg select2-livewire"
-                        id="project_id_livewire" wire:model.live="project_id">
-                        <option value="">Select Project</option>
-                        @foreach ($projects as $project)
-                            <option value="{{ $project->id }}">{{ $project->name }}-{{ $project->code }}</option>
-                        @endforeach
-                    </select>
+                    @if(auth()->user()->role === 'orionDC')
+                        <select class="form-control custom-select form-control-lg" id="project_id_livewire" wire:model.live="project_id" disabled>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}" selected>{{ $project->name }}-{{ $project->code }}</option>
+                            @endforeach
+                        </select>
+                    @else
+                        <select class="form-control custom-select form-control-lg select2-livewire"
+                            id="project_id_livewire" wire:model.live="project_id" data-model="project_id">
+                            <option value="">Select Project</option>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}">{{ $project->name }}-{{ $project->code }}</option>
+                            @endforeach
+                        </select>
+                    @endif
                 </div>
                 @error('project_id') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
@@ -34,7 +42,7 @@
                 <label for="vehicle_id_livewire">Vehicle</label>
                 <div wire:ignore>
                     <select class="form-control custom-select form-control-lg select2-livewire"
-                        id="vehicle_id_livewire" wire:model.live="vehicle_id">
+                        id="vehicle_id_livewire" wire:model.live="vehicle_id" data-model="vehicle_id">
                         <option value="">Select Vehicle</option>
                         @foreach ($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}">{{ $vehicle->plate_number }}-{{ $vehicle->vehicle_type }}</option>
@@ -118,14 +126,14 @@
                 @error('odometer_ends') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <div class="col-md-4 mt-3">
+            {{--  <div class="col-md-4 mt-3">
                 <label for="fuel_consumption_status_livewire">Fuel Consumption Status</label>
                 <select class="form-control custom-select" id="fuel_consumption_status_livewire" wire:model.live="fuel_consumption_status">
                     <option value="by_hours">By Hour</option>
                     <option value="by_odometer">By Odometer</option>
                 </select>
                 @error('fuel_consumption_status') <span class="text-danger">{{ $message }}</span> @enderror
-            </div>
+            </div>  --}}
 
             <div class="col-md-4 mt-3">
                 <label for="fuel_consumption_livewire">Fuel Consumption</label>
@@ -144,8 +152,6 @@
                 <textarea class="form-control" id="note_livewire" wire:model.live="note" rows="3"></textarea>
                 @error('note') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
-
-
         </div>
     </div>
     <div class="modal-footer">
@@ -161,24 +167,90 @@
 <script>
     function initSelect2Livewire() {
         console.log('initSelect2Livewire called');
-        $('.select2-livewire').select2({
-            dropdownParent: $('#exampleModalLarge01')
-        }).off('change').on('change', function (e) {
-            let model = $(this).attr('wire:model.live') || $(this).attr('wire:model');
-            if (model) {
-                @this.set(model, $(this).val());
+
+        // Destroy existing Select2 instances first
+        $('.select2-livewire').each(function() {
+            if ($(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2('destroy');
             }
         });
+
+        $('.select2-livewire').select2({
+            dropdownParent: $('#exampleModalLarge01'),
+            placeholder: 'Please select...',
+            allowClear: false,
+            width: '100%'
+        }).off('change.select2livewire').on('change.select2livewire', function (e) {
+            let model = $(this).data('model');
+            let value = $(this).val();
+
+            console.log('Select2 changed:', model, value);
+
+            if (model) {
+                // Ensure we pass the value even if empty
+                if (value === null || value === undefined) {
+                    value = '';
+                }
+
+                // Use Livewire's set method
+                @this.set(model, value);
+
+                // Also dispatch a custom event to ensure Livewire updates
+                @this.dispatch('select2-updated', { field: model, value: value });
+            }
+        });
+
+        // Set initial values from Livewire data after a short delay
+        setTimeout(() => {
+            // Only set values if the elements exist and have Livewire data
+            if ($('#project_id_livewire').length && @this.project_id) {
+                $('#project_id_livewire').val(@this.project_id).trigger('change.select2');
+            }
+            if ($('#vehicle_id_livewire').length && @this.vehicle_id) {
+                $('#vehicle_id_livewire').val(@this.vehicle_id).trigger('change.select2');
+            }
+        }, 200);
     }
 
-    document.addEventListener('livewire:load', function () {
-        initSelect2Livewire();
-        Livewire.hook('message.processed', (message, component) => {
+    // Initialize when Livewire loads
+    document.addEventListener('livewire:init', function () {
+        console.log('Livewire init event fired');
+        setTimeout(initSelect2Livewire, 100);
+    });
+
+    // Reinitialize after navigation (for SPA-like behavior)
+    document.addEventListener('livewire:navigated', function () {
+        console.log('Livewire navigated event fired');
+        setTimeout(initSelect2Livewire, 100);
+    });
+
+    // Reinitialize after Livewire updates the DOM
+    Livewire.hook('morph.updated', ({ el, component }) => {
+        console.log('Livewire morph updated');
+        setTimeout(initSelect2Livewire, 100);
+    });
+
+    // Ensure Select2 and calculation runs when modal opens
+    $('#exampleModalLarge01').on('shown.bs.modal', function () {
+        console.log('Modal shown, reinitializing Select2 and triggering calculation');
+        setTimeout(() => {
             initSelect2Livewire();
+            if (typeof @this !== 'undefined') {
+                @this.call('calculateWorkingHours');
+            }
+        }, 300);
+    });
+
+    // Reset Select2 when form is reset
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('resetTimesheetFormSelects', () => {
+            console.log('Resetting Select2 selects');
+            $('.select2-livewire').val('').trigger('change.select2');
+            setTimeout(initSelect2Livewire, 100);
         });
     });
 
-    // Simplified approach - just trigger calculation on input changes
+    // Time input calculation handlers
     document.addEventListener('livewire:init', () => {
         console.log('Livewire initialized for timesheet form');
 
@@ -202,16 +274,21 @@
                 }, 150);
             });
         });
+
+        // Break duration input handler
+        const breakInput = document.querySelector('#break_duration_hours_livewire');
+        if (breakInput) {
+            breakInput.addEventListener('change', function() {
+                console.log('Break duration changed:', this.value);
+                setTimeout(() => {
+                    @this.call('calculateWorkingHours');
+                }, 150);
+            });
+        }
     });
 
-    // Ensure calculation runs when modal opens
-    $('#exampleModalLarge01').on('shown.bs.modal', function () {
-        console.log('Modal shown, triggering initial calculation');
-        setTimeout(() => {
-            if (typeof @this !== 'undefined') {
-                @this.call('calculateWorkingHours');
-            }
-        }, 300);
+    window.addEventListener('timesheet-saved', function () {
+        window.location.reload();
     });
 </script>
 @endpush

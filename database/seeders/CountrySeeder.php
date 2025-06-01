@@ -17,7 +17,7 @@ class CountrySeeder extends Seeder
         $countries = [
             [
                 'name' => 'United Arab Emirates',
-                'code' => 'ARE',
+                'code' => 'UAE',
                 'phone_code' => '971',
                 'currency' => 'AED',
                 'currency_symbol' => 'د.إ',
@@ -57,6 +57,11 @@ class CountrySeeder extends Seeder
             ],
         ];
 
-        DB::table('countries')->insert($countries);
+        foreach ($countries as $country) {
+            DB::table('countries')->updateOrInsert(
+                ['code' => $country['code']],
+                $country
+            );
+        }
     }
 }

@@ -14,6 +14,7 @@ use App\Models\Category; // For category_id on Supplier
 use App\Models\Country;  // For country_id on Branch
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -67,52 +68,120 @@ class DatabaseSeeder extends Seeder
             $countries = Country::factory(5)->create();
         }
 
-        $suppliers = Supplier::factory(10)->make()->each(function ($supplier) use ($categories) {
-            $supplier->category_id = $categories->random()->id;
-            $supplier->save();
-        })->collect();
+        // Seed suppliers with unique names from provided list
+        $supplierNames = [
+            'Abdul waheed', 'Ahmad Hassan', 'Ahmed Adil', 'AHMED HASSAN', 'Ahmed Turki',
+            'Al Azam Transport', 'Al Bahar transport', 'AL ERFAN', 'AL GHAZI', 'Al Hilal Transport',
+            'Al Mafraq', 'Al Mutawa', 'Al Naham', 'Al Nuaimi', 'Al Rasmi', 'Al Sahil',
+            'Al Salih Electro mech', 'al Saqar Transport', 'AL SEDRA', 'AL SHAMIL',
+            'Al Soqour Transport', 'Al Taj Water', 'Al Tannaf', 'ASIAN TRANSPORT',
+            'AZEEM TRANSPORT', 'Bhatia Brothers', 'CDHorison', 'Delta', 'ERC TRANSPORT',
+            'Fauji Transport', 'FOUR STAR', 'G Therm', 'Gargash Equipment', 'Genesis',
+            'imad transport', 'Jabal Jaish', 'Jhon Son', 'Mazid Building', 'Middle East',
+            'Mr.Thamer', 'Muhammad Younis', 'Naffco', 'Oasis', 'OCC', 'omi', 'OMI Transport',
+            'Orion', 'Pure Piling', 'Rapid Access', 'Sea Coral', 'Sher Khan',
+        ];
+        // Remove all old suppliers safely
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('invoices')->truncate();
+        \App\Models\Supplier::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        foreach (array_unique($supplierNames) as $name) {
+            $email = strtolower(str_replace([' ', '.', ','], ['_', '', ''], $name)) . '@example.com';
+            \App\Models\Supplier::updateOrCreate(
+                ['name' => $name],
+                [
+                    'contact_name' => $name,
+                    'contact_email' => $email,
+                    'address' => 'N/A',
+                    'status' => 'active',
+                ]
+            );
+        }
 
-        $branches = Branch::factory(5)->make()->each(function ($branch) use ($countries) {
-            $branch->country_id = $countries->random()->id;
-            $branch->save();
-        })->collect();
+        // Seed branches with provided data
+        $uae = \App\Models\Country::where('code', 'UAE')->first();
+        if (!$uae) {
+            throw new \Exception('UAE country not found. Please check your CountrySeeder.');
+        }
+        $branchesData = [
+            [
+                'name' => 'Main',
+                'code' => 'Orion-RAK',
+                'country_id' => $uae->id,
+                'address' => 'ras al khaima',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Dubai',
+                'code' => 'DXB',
+                'country_id' => $uae->id,
+                'address' => 'Dubai',
+                'is_active' => true,
+            ],
+        ];
+        // Remove all old branches and projects safely
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('project_vehicle')->truncate();
+        \App\Models\Project::truncate();
+        \App\Models\Branch::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $branches = [];
+        foreach ($branchesData as $data) {
+            $branches[$data['code']] = \App\Models\Branch::create($data);
+            echo "Created branch: {$data['name']}\n";
+        }
+        // Seed projects with provided data, all linked to Orion-RAK branch
+        $projectsData = [
+            ['name' => 'All General', 'code' => 'AG-001', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'Marjan', 'code' => 'RAK222', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'RAK Central', 'code' => 'RAK242', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'Ashok Lyland', 'code' => 'RAK245', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'Sobha', 'code' => 'RAK246', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'sobha', 'code' => 'RAK255', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'VIP Villa', 'code' => 'RAK247', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'RAKEZ warehouse (60 K)', 'code' => 'RAK248', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'RAKEZ warehouse (20 K)', 'code' => 'RAK249', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'RAKEZ warehouse (15 K)', 'code' => 'RAK250', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'RAKEZ Accommodation', 'code' => 'RAK254', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'X-Pro AlGhail', 'code' => 'RAK257', 'branch_code' => 'Orion-RAK'],
+            ['name' => 'AL-Bawardy', 'code' => 'SH-007', 'branch_code' => 'Orion-RAK'],
+        ];
+        foreach ($projectsData as $data) {
+            $project = \App\Models\Project::create([
+                'name' => $data['name'],
+                'code' => $data['code'],
+                'branch_id' => $branches[$data['branch_code']]->id ?? null,
+                'status' => 'active',
+            ]);
+            echo "Created project: {$data['name']}\n";
+        }
 
-        $operators = Operator::factory(15)->make()->each(function ($operator) use ($suppliers) {
-            if ($suppliers->isNotEmpty()) {
-                $operator->supplier_id = $suppliers->random()->id;
-            }
-            // vehicle_id on operator is often nullable or set when assigned,
-            // so we might not set it here or make it optional.
-            $operator->save();
-        })->collect();
+        // Remove all old vehicles and project_vehicle safely
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('project_vehicle')->truncate();
+        \App\Models\Vehicle::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $vehicles = Vehicle::factory(20)->make()->each(function ($vehicle) use ($suppliers, $operators) {
-            if ($suppliers->isNotEmpty()) {
-                $vehicle->supplier_id = $suppliers->random()->id;
-            }
-            // operator_id on vehicle can also be tricky; a vehicle might not have an operator initially,
-            // or an operator might be assigned to multiple vehicles (or vice-versa depending on relationship type)
-            // For a simple nullable one-to-one or one-to-many (vehicle has one operator):
-            if ($operators->isNotEmpty() && rand(0,1)) { // 50% chance of assigning an operator
-                 $vehicle->operator_id = $operators->random()->id;
-            }
-            $vehicle->save();
-        })->collect();
-
-        $projects = Project::factory(8)->make()->each(function ($project) use ($branches) {
-            if ($branches->isNotEmpty()) {
-                $project->branch_id = $branches->random()->id;
-            }
-            $project->save();
-        })->collect();
-
-        // Assign vehicles to projects (Many-to-Many through project_vehicles table)
-        // This assumes your Project model has a vehicles() BelongsToMany relationship defined.
-        if ($vehicles->isNotEmpty()) {
-            foreach ($projects as $project) {
-                $project->vehicles()->attach(
-                    $vehicles->random(rand(1, min(5, $vehicles->count())))->pluck('id')->toArray()
-                );
+        // Load all vehicles from JSON file
+        $vehiclesData = json_decode(file_get_contents(base_path('public/vehicles_data.json')), true);
+        foreach ($vehiclesData as $v) {
+            $supplier = \App\Models\Supplier::where('name', $v['supplier_name'])->first();
+            if (!$supplier) continue; // skip if supplier not found
+            $vehicle = \App\Models\Vehicle::updateOrCreate(
+                ['plate_number' => $v['plate_number']],
+                [
+                    'vehicle_type' => $v['vehicle_type'],
+                    'supplier_id' => $supplier->id,
+                ]
+            );
+            echo "Created/updated vehicle: {$v['plate_number']} ({$v['vehicle_type']})\n";
+            foreach ($v['projects'] as $projectCode) {
+                $project = \App\Models\Project::where('code', $projectCode)->first();
+                if ($project) {
+                    $vehicle->projects()->syncWithoutDetaching([$project->id]);
+                    echo "  Assigned to project: {$projectCode}\n";
+                }
             }
         }
     }

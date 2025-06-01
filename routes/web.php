@@ -21,6 +21,7 @@ use App\Models\Operator;
 use App\Models\TimesheetDaily;
 use App\Livewire\ReportsPage;
 use App\Livewire\ProjectVehicleTimesheetTable;
+use App\Http\Controllers\CompareController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
             Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
             Route::get('reports', [App\Http\Controllers\ReportsController::class, 'index'])->name('reports.index');
             Route::get('projects/{project}/timesheets', [App\Http\Controllers\ProjectController::class, 'projectTimesheets'])->name('projects.timesheets');
+
+            // Compare Reports Routes
+            Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
+            Route::post('/compare/results', [CompareController::class, 'showResults'])->name('compare.results');
         });
 
         Route::resource('timesheet', TimesheetDailyController::class)->parameters([
@@ -68,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/my-timesheets', [App\Http\Controllers\TimesheetDailyController::class, 'indexPerUser'])->name('timesheet.indexPerUser');
 
 
 });
