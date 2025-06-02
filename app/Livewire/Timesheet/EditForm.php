@@ -85,10 +85,10 @@ class EditForm extends Component
         $this->working_end_hour = $model->working_end_hour ?
             Carbon::parse($model->working_end_hour)->format('Y-m-d\\TH:i') : '';
 
-        if (isset($model->break_duration_minutes) && is_numeric($model->break_duration_minutes) && $model->break_duration_minutes > 0) {
+        if (isset($model->break_duration_minutes) && is_numeric($model->break_duration_minutes) && $model->break_duration_minutes >= 0) {
             $hours = floor($model->break_duration_minutes / 60);
             $minutes = $model->break_duration_minutes % 60;
-            $this->break_duration_hours = sprintf('%d.%02d', $hours, $minutes_to_decimal = round($minutes / 60 * 100));
+            $this->break_duration_hours = sprintf('%d.%02d', $hours, $minutes);
         } else {
             $this->break_duration_hours = '0.00';
         }
@@ -187,57 +187,83 @@ class EditForm extends Component
     public function calculateWorkingHours()
     {
         try {
-            Log::info('Starting calculation (EditForm)', [
-                'start' => $this->working_start_hour,
-                'end' => $this->working_end_hour,
-                'break_duration_hours' => $this->break_duration_hours
+            Log::info('Calculation START (EditForm)', [
+                'start_input' => $this->working_start_hour,
+                'end_input' => $this->working_end_hour,
+                'break_hours_input' => $this->break_duration_hours
             ]);
 
             if (empty($this->working_start_hour) || empty($this->working_end_hour)) {
                 $this->working_hours = '0.00';
+                Log::info('Calculation ABORTED: Missing start or end time (EditForm)');
                 return;
             }
 
             if (!empty($this->validation_errors['working_times'])) {
                 $this->working_hours = '0.00';
+                Log::info('Calculation ABORTED: Validation errors exist (EditForm)');
                 return;
             }
 
             $startTime = Carbon::parse($this->working_start_hour);
             $endTime = Carbon::parse($this->working_end_hour);
 
+            Log::info('Parsed Carbon dates (EditForm)', [
+                'startTime' => $startTime->toDateTimeString(),
+                'endTime' => $endTime->toDateTimeString()
+            ]);
+
             if (!$startTime || !$endTime || $endTime->lessThanOrEqualTo($startTime)) {
                 $this->working_hours = '0.00';
+                Log::info('Calculation ABORTED: Invalid dates or end <= start (EditForm)');
                 return;
             }
 
             $totalMinutes = $startTime->diffInMinutes($endTime);
+            Log::info('Total minutes before break (EditForm)', ['totalMinutes' => $totalMinutes]);
+
             $breakMinutes = 0;
-            if (!empty($this->break_duration_hours) && is_numeric($this->break_duration_hours)) {
-                $breakDurationInHours = (float) $this->break_duration_hours;
-                if ($breakDurationInHours > 0) {
-                    $breakMinutes = round($breakDurationInHours * 60);
-                }
+            if (!empty($this->break_duration_hours) && is_string($this->break_duration_hours)) {
+                 $parts = explode('.', $this->break_duration_hours);
+                 $hours = (int)($parts[0] ?? 0);
+                 $minutes = (int)($parts[1] ?? 0);
+
+                 if ($hours >= 0 && $minutes >= 0 && $minutes < 100) {
+                    $breakMinutes = ($hours * 60) + $minutes;
+                 } else {
+                     Log::warning('Invalid break duration format or value (EditForm)', ['input' => $this->break_duration_hours]);
+                 }
+
+            } else if (is_numeric($this->break_duration_hours) && $this->break_duration_hours >= 0) {
+                 $breakMinutes = round((float) $this->break_duration_hours * 60);
+                 Log::info('Parsed numeric break duration (EditForm)', ['input' => $this->break_duration_hours, 'breakMinutes' => $breakMinutes]);
             }
+
+            Log::info('Break minutes (EditForm)', ['breakMinutes' => $breakMinutes]);
 
             $netMinutes = $totalMinutes - $breakMinutes;
             if ($netMinutes < 0) $netMinutes = 0;
 
+            Log::info('Net minutes after break (EditForm)', ['netMinutes' => $netMinutes]);
+
             $hours = floor($netMinutes / 60);
             $remainingMinutes = $netMinutes % 60;
+
             $this->working_hours = sprintf('%d.%02d', $hours, $remainingMinutes);
 
-            Log::info('Calculation completed (EditForm)', [
-                'total_minutes' => $totalMinutes,
-                'break_minutes' => $breakMinutes,
-                'net_minutes' => $netMinutes,
-                'result' => $this->working_hours
+            Log::info('Calculation RESULT (EditForm)', [
+                'result' => $this->working_hours,
+                'hours' => $hours,
+                'remainingMinutes' => $remainingMinutes
             ]);
 
         } catch (\Exception $e) {
             $this->working_hours = '0.00';
             Log::error('Calculation error (EditForm): ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'start_input' => $this->working_start_hour,
+                'end_input' => $this->working_end_hour,
+                'break_hours_input' => $this->break_duration_hours
             ]);
         }
     }

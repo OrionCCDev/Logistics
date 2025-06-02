@@ -103,7 +103,7 @@
                         <input type="text"
                                class="form-control bg-light"
                                id="working_hours_livewire"
-                               value="{{ $working_hours }}"
+                               wire:model.live="working_hours"
                                readonly
                                style="font-weight: bold; background-color: #e9ecef !important; color: #495057;">
 

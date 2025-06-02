@@ -123,8 +123,8 @@
                         <div class="form-group row mb-3">
                             <label for="working_hours" class="col-md-4 col-form-label text-md-right">{{ __('Working Hours') }}</label>
                             <div class="col-md-6">
-                                <input id="working_hours" type="number" step="0.01" class="form-control @error('working_hours') is-invalid @enderror" name="working_hours" value="{{ old('working_hours', $timesheet->working_hours) }}">
-                                <small class="form-text text-muted">{{ __('Leave blank if calculated from start/end times, or fill to override.') }}</small>
+                                <input id="working_hours" type="number" step="0.01" class="form-control @error('working_hours') is-invalid @enderror" name="working_hours" value="{{ old('working_hours', $timesheet->working_hours) }}" disabled>
+                                <small class="form-text text-muted">{{ __('Calculated automatically from start/end times and break.') }}</small>
                                 @error('working_hours')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -265,6 +265,36 @@
             placeholder: "{{ __('Select Project') }}",
             allowClear: true
         });
+
+        function calculateWorkingHours() {
+            const startInput = $('#working_start_hour');
+            const endInput = $('#working_end_hour');
+            const breakInput = $('#break_duration_hours');
+            const workingHoursInput = $('#working_hours');
+
+            const start = new Date(startInput.val());
+            const end = new Date(endInput.val());
+            const breakHours = parseFloat(breakInput.val()) || 0;
+
+            if (start && end && start < end) {
+                const totalMilliseconds = end - start;
+                const totalHours = totalMilliseconds / (1000 * 60 * 60);
+                const netHours = totalHours - breakHours;
+                workingHoursInput.val(netHours.toFixed(2));
+            } else if (startInput.val() || endInput.val() || breakInput.val()) {
+                 // Handle cases where dates are invalid or start >= end
+                 workingHoursInput.val('Invalid Input'); // Or clear the field
+            } else {
+                 // All fields are empty, clear working hours
+                 workingHoursInput.val('');
+            }
+        }
+
+        // Attach event listeners to relevant fields
+        $('#working_start_hour, #working_end_hour, #break_duration_hours').on('input change', calculateWorkingHours);
+
+        // Initial calculation on page load if fields are pre-filled
+        calculateWorkingHours();
     });
 </script>
 @endpush

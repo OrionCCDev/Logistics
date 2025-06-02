@@ -7,6 +7,9 @@
     <title>@yield('page_title', config('app.name', 'Laravel'))</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Bootstrap 4 CSS (from CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('dashAssets/dist/img/logo-dark.png') }}">
     <link rel="icon" href="{{ asset('dashAssets/dist/img/logo-dark.png') }}" type="image/x-icon">
@@ -30,6 +33,13 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- DataTables and Buttons Bootstrap 4 CSS (from CDN) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs4/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-buttons-bs4/1.7.1/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css">
+
+    <!-- DataTables CSS -->
+    <link href="{{ asset('dashAssets/vendors/datatables.net-dt/css/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
 
     <!-- Custom CSS -->
     <link href="{{ asset('dashAssets/dist/css/style.css') }}" rel="stylesheet" type="text/css">
@@ -768,6 +778,7 @@
     }
 }
 </style>
+
 </head>
 
 <body>
@@ -1322,6 +1333,13 @@
     @livewireScripts
     @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="{{ asset('dashAssets/vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/jszip/dist/jszip.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/pdfmake/build/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('dashAssets/vendors/pdfmake/build/vfs_fonts.js') }}"></script>
 </body>
 
 </html>
