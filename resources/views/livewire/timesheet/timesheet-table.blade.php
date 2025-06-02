@@ -59,6 +59,9 @@
                     <th wire:click="sortBy('project_id')" style="cursor: pointer;">Project</th>
                     <th wire:click="sortBy('vehicle_id')" style="cursor: pointer;">Vehicle</th>
                     <th wire:click="sortBy('working_hours')" style="cursor: pointer;">Work Hours</th>
+                    <th wire:click="sortBy('fuel_consumption')" style="cursor: pointer;">Fuel Consumption</th>
+                    <th wire:click="sortBy('note')" style="cursor: pointer;">Average</th>
+                    <th wire:click="sortBy('note')" style="cursor: pointer;">Remarks</th>
                     <th>Supplier</th>
                     <th>Actions</th>
                 </tr>
@@ -71,6 +74,9 @@
                         <td>{{ $timesheet->project?->name ?? 'N/A' }}</td>
                         <td>{{ $timesheet->vehicle?->plate_number ?? 'N/A' }}</td>
                         <td>{{ $timesheet->working_hours ?? 'N/A' }}</td>
+                        <td>{{ $timesheet->fuel_consumption ?? 'N/A' }}</td>
+                        <td>{{ ($timesheet->working_hours > 0) ? number_format($timesheet->fuel_consumption / $timesheet->working_hours, 2) : 'N/A' }}</td>
+                        <td title="{{ $timesheet->note ?? '' }}">{{ $timesheet->note ?? 'N/A' }}</td>
                         <td>{{ $timesheet->vehicle?->supplier?->name ?? 'N/A' }}</td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">

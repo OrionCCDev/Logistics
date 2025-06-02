@@ -26,6 +26,8 @@
                             <th>Vehicle</th>
                             <th>Work Hours</th>
                             <th>Fuel Consumption</th>
+                            <th>Average</th>
+                            <th>Remarks</th>
                             @if(auth()->user()->role == 'orionAdmin' || auth()->user()->role == 'orionManager')
                             <th>Actions</th>
                             @endif
@@ -39,6 +41,8 @@
                             <td>{{ $timesheet->vehicle?->plate_number ?? 'N/A' }}</td>
                             <td>{{ $timesheet->working_hours ?? 'N/A' }}</td>
                             <td>{{ $timesheet->fuel_consumption ?? 'N/A' }}</td>
+                            <td>{{ ($timesheet->working_hours > 0) ? number_format($timesheet->fuel_consumption / $timesheet->working_hours, 2) : 'N/A' }}</td>
+                            <td title="{{ $timesheet->note ?? '' }}">{{ $timesheet->note ?? 'N/A' }}</td>
                             @if(auth()->user()->role == 'orionAdmin' || auth()->user()->role == 'orionManager')
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
