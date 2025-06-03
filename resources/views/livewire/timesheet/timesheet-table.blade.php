@@ -17,66 +17,38 @@
         </div>
     @endif
 
-    {{-- Search and Per Page controls --}}
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <input wire:model.live.debounce.300ms="search" type="text" class="form-control" placeholder="Search timesheets...">
-        </div>
-        <div class="col-md-3">
-            <select wire:model.live="projectFilter" class="form-control">
-                <option value="">All Projects</option>
-                @foreach ($projects as $project)
-                    <option value="{{ $project->id }}">{{ $project->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select wire:model.live="perPage" class="form-control">
-                <option value="10">10 per page</option>
-                <option value="25">25 per page</option>
-                <option value="50">50 per page</option>
-                <option value="100">100 per page</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <button class="btn btn-outline-info w-100 mb-1" wire:click="filterThisMonth">
-                This Month's History
-            </button>
-            @if($thisMonthOnly)
-                <button class="btn btn-outline-secondary w-100" wire:click="clearMonthFilter">
-                    Clear Filter
-                </button>
-            @endif
-        </div>
-    </div>
-
     <div class="table-responsive">
-        <table id="timesheetTable" class="table table-hover table-bordered align-middle">
+        <table id="timesheetTable" class="table table-hover table-bordered align-middle datatable">
             <thead class="thead-light">
                 <tr>
-                    <th wire:click="sortBy('user_id')" style="cursor: pointer;">Created By</th>
-                    <th wire:click="sortBy('date')" style="cursor: pointer;">Date</th>
-                    <th wire:click="sortBy('project_id')" style="cursor: pointer;">Project</th>
-                    <th wire:click="sortBy('vehicle_id')" style="cursor: pointer;">Vehicle</th>
-                    <th wire:click="sortBy('working_hours')" style="cursor: pointer;">Work Hours</th>
-                    <th wire:click="sortBy('fuel_consumption')" style="cursor: pointer;">Fuel Consumption</th>
-                    <th wire:click="sortBy('note')" style="cursor: pointer;">Average</th>
-                    <th wire:click="sortBy('note')" style="cursor: pointer;">Remarks</th>
+                    <th>Created By</th>
+                    <th>Date</th>
+                    <th>Project</th>
+                    <th>Vehicle</th>
+                    <th>Work Hours</th>
+                    <th>Fuel Consumption</th>
+                    <th>Average</th>
+                    <th>Remarks</th>
                     <th>Supplier</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($timesheets as $timesheet)
-                    <tr wire:key="timesheet-row-{{ $timesheet->id }}">
+                    <tr wire:key="timesheet-row-{{ $timesheet->id }}"
+                        data-search="{{ strtolower(($timesheet->project?->name ?? '') . ' ' . ($timesheet->vehicle?->plate_number ?? '') . ' ' . ($timesheet->vehicle?->supplier?->name ?? '') . ' ' . ($timesheet->user?->name ?? '')) }}">
                         <td>{{ $timesheet->user?->name ?? 'N/A' }}</td>
-                        <td>{{ $timesheet->date ? $timesheet->date->format('d M, Y') : 'N/A' }}</td>
+                        <td data-order="{{ $timesheet->date ? $timesheet->date->format('Y-m-d') : '1900-01-01' }}">
+                            {{ $timesheet->date ? $timesheet->date->format('d M, Y') : 'N/A' }}
+                        </td>
                         <td>{{ $timesheet->project?->name ?? 'N/A' }}</td>
                         <td>{{ $timesheet->vehicle?->plate_number ?? 'N/A' }}</td>
                         <td>{{ $timesheet->working_hours ?? 'N/A' }}</td>
                         <td>{{ $timesheet->fuel_consumption ?? 'N/A' }}</td>
                         <td>{{ ($timesheet->working_hours > 0) ? number_format($timesheet->fuel_consumption / $timesheet->working_hours, 2) : 'N/A' }}</td>
-                        <td title="{{ $timesheet->note ?? '' }}">{{ $timesheet->note ?? 'N/A' }}</td>
+                        <td title="{{ $timesheet->note ?? '' }}">
+                            {{ $timesheet->note ? Str::limit($timesheet->note, 30) : 'N/A' }}
+                        </td>
                         <td>{{ $timesheet->vehicle?->supplier?->name ?? 'N/A' }}</td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
@@ -101,101 +73,171 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">No timesheet entries found.</td>
+                        <td colspan="10" class="text-center">No timesheet entries found.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-
-    {{-- Pagination Links --}}
-    <div class="mt-3">
-        {{ $timesheets->links('pagination::bootstrap-4') }}
-    </div>
 </div>
 
-@script
+@push('scripts')
 <script>
-    let dataTableInstance = null;
-
-    function initializeDataTable() {
-        // Destroy existing DataTable instance if it exists
-        if (dataTableInstance !== null) {
-            dataTableInstance.destroy();
-            dataTableInstance = null;
+    function initializeTimesheetTable() {
+        // Check if DataTable already exists and destroy it
+        if ($.fn.DataTable.isDataTable('#timesheetTable')) {
+            $('#timesheetTable').DataTable().destroy();
         }
 
         // Initialize DataTable
-        dataTableInstance = $('#timesheetTable').DataTable({
-            dom: 'Bfrtip',
+        var table = $('#timesheetTable').DataTable({
+            // Basic layout
+            dom: 'Blfrtip',
+
+            // Export buttons
             buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                {
+                    extend: 'copy',
+                    text: '<i class="fa fa-copy"></i> Copy',
+                    className: 'btn btn-secondary btn-sm'
+                },
+                {
+                    extend: 'csv',
+                    text: '<i class="fa fa-file-csv"></i> CSV',
+                    className: 'btn btn-success btn-sm'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fa fa-file-excel"></i> Excel',
+                    className: 'btn btn-success btn-sm'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf"></i> PDF',
+                    className: 'btn btn-danger btn-sm',
+                    orientation: 'landscape'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fa fa-print"></i> Print',
+                    className: 'btn btn-info btn-sm'
+                }
             ],
-            // Add options here if needed, e.g., processing, serverSide
-            // processing: true,
-            // serverSide: true,
-            // ajax: '...' // Your data source if using server-side
-        });
 
-        // Apply Bootstrap button classes and icons to the generated buttons
-        $('#timesheetTable').closest('.dataTables_wrapper').find('.dt-buttons .dt-button').each(function() {
-            // Remove any existing inline styles applied previously and default classes
-            $(this).removeAttr('style').removeClass('btn btn-primary btn-secondary btn-info btn-success btn-danger');
+            // Pagination
+            pageLength: 25,
+            lengthMenu: [
+                [10, 25, 50, 100, 250, 500, -1],
+                [10, 25, 50, 100, 250, 500, "All"]
+            ],
 
-            // Get the button text to determine type
-            const buttonText = $(this).find('span').text();
-            let buttonClass = 'btn ';
-            let iconHtml = '';
+            // Sorting - default by date descending
+            order: [[1, 'desc']],
 
-            if (buttonText === 'Copy') {
-                buttonClass += 'btn-secondary';
-                iconHtml = '<i class="fas fa-copy"></i> ';
-            } else if (buttonText === 'CSV') {
-                buttonClass += 'btn-info';
-                iconHtml = '<i class="fas fa-file-csv"></i> ';
-            } else if (buttonText === 'Excel') {
-                buttonClass += 'btn-success';
-                iconHtml = '<i class="fas fa-file-excel"></i> ';
-            } else if (buttonText === 'PDF') {
-                buttonClass += 'btn-danger';
-                iconHtml = '<i class="fas fa-file-pdf"></i> ';
-            } else if (buttonText === 'Print') {
-                buttonClass += 'btn-primary';
-                iconHtml = '<i class="fas fa-print"></i> ';
+            // Column settings
+            columnDefs: [
+                {
+                    targets: [9], // Actions column
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    targets: [4, 5, 6], // Numeric columns
+                    className: 'text-right'
+                }
+            ],
+
+            // Display settings
+            responsive: true,
+            autoWidth: false,
+            processing: false,
+
+            // Enhanced search settings for global search
+            search: {
+                smart: true,
+                regex: false,
+                caseInsensitive: true
+            },
+
+            // Custom search function to include data-search attributes
+            searchCols: [
+                null, // Created By
+                null, // Date
+                null, // Project
+                null, // Vehicle
+                null, // Work Hours
+                null, // Fuel Consumption
+                null, // Average
+                null, // Remarks
+                null, // Supplier
+                null  // Actions
+            ],
+
+            // Language
+            language: {
+                search: "Search (Project, Vehicle, Supplier, User):",
+                searchPlaceholder: "Type to search...",
+                lengthMenu: "Show _MENU_ entries per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ timesheets",
+                infoEmpty: "Showing 0 to 0 of 0 timesheets",
+                infoFiltered: "(filtered from _MAX_ total timesheets)",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                },
+                emptyTable: "No timesheet data available",
+                zeroRecords: "No matching timesheets found"
+            },
+
+            // Custom search functionality
+            initComplete: function() {
+                var api = this.api();
+
+                // Override the default search to include data-search attributes
+                $('#timesheetTable_filter input').off().on('keyup change', function() {
+                    var searchTerm = this.value.toLowerCase();
+
+                    api.rows().every(function() {
+                        var row = this.node();
+                        var rowData = $(row).data('search') || '';
+                        var visible = rowData.includes(searchTerm) ||
+                                    $(row).text().toLowerCase().includes(searchTerm);
+
+                        if (visible) {
+                            $(row).show();
+                        } else {
+                            $(row).hide();
+                        }
+                    });
+
+                    // Use DataTable's built-in search for other columns
+                    api.search(this.value).draw();
+                });
+
+                console.log('DataTable initialized with enhanced search');
             }
-
-            // Add the determined Bootstrap classes
-            $(this).addClass(buttonClass);
-
-            // Prepend the icon to the button text
-            $(this).find('span').prepend(iconHtml);
         });
+
+        // Style buttons
+        $('#timesheetTable_wrapper .dt-buttons .dt-button').addClass('mr-1 mb-1');
+
+        console.log('DataTable initialized with ' + table.rows().count() + ' rows');
     }
 
-    // Initialize DataTable when the Livewire component is first mounted
-    Livewire.hook('component.init', ({ component, cleanup }) => {
-        if (component.name === 'timesheet.timesheet-table') {
-             // Use a small timeout to ensure DOM is ready after init
-            setTimeout(initializeDataTable, 0);
-        }
+    // Initialize on document ready
+    $(document).ready(function () {
+        setTimeout(function() {
+            initializeTimesheetTable();
+        }, 100);
     });
 
-    // Re-initialize DataTable after each Livewire update
-    Livewire.hook('commit.acted', ({ component, succeed }) => {
-        if (component.name === 'timesheet.timesheet-table' && succeed) {
-            // Use a small timeout to ensure DOM is ready after update
-            setTimeout(initializeDataTable, 0);
-        }
-    });
-
-    // Clean up DataTable instance when the component is destroyed
-    Livewire.hook('component.removed', ({ component }) => {
-        if (component.name === 'timesheet.timesheet-table') {
-             if (dataTableInstance !== null) {
-                dataTableInstance.destroy();
-                dataTableInstance = null;
-            }
-        }
+    // Reinitialize after Livewire updates
+    document.addEventListener('livewire:updated', function () {
+        setTimeout(function() {
+            initializeTimesheetTable();
+        }, 200);
     });
 </script>
-@endscript
+@endpush

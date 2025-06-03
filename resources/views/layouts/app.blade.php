@@ -34,12 +34,10 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- DataTables and Buttons Bootstrap 4 CSS (from CDN) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-bs4/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables.net-buttons-bs4/1.7.1/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css">
-
-    <!-- DataTables CSS -->
-    <link href="{{ asset('dashAssets/vendors/datatables.net-dt/css/jquery.dataTables.min.css') }}" rel="stylesheet" type="text/css">
+    <!-- New DataTables 2.3.1 Core CSS -->
+    <link href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.css" rel="stylesheet" type="text/css">
+    <!-- New DataTables Buttons CSS -->
+    <link href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.css" rel="stylesheet" type="text/css">
 
     <!-- Custom CSS -->
     <link href="{{ asset('dashAssets/dist/css/style.css') }}" rel="stylesheet" type="text/css">
@@ -1333,13 +1331,60 @@
     @livewireScripts
     @stack('scripts') {{-- This is the primary stack for page-specific scripts --}}
     <script src="https://unpkg.com/alpinejs" defer></script>
-    <script src="{{ asset('dashAssets/vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/jszip/dist/jszip.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/pdfmake/build/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('dashAssets/vendors/pdfmake/build/vfs_fonts.js') }}"></script>
+
+    <!-- New DataTables 2.3.1 Core JS -->
+    <script src="https://cdn.datatables.net/2.3.1/js/dataTables.js"></script>
+
+    <!-- New DataTables Buttons JS and Dependencies -->
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+    <script>
+        function initializeDatatables(container = document) {
+            // Skip if this is the timesheet table (it has its own initialization)
+            $(container).find('table.datatable').not('#timesheetTable').each(function() {
+                if (!$.fn.DataTable.isDataTable(this)) {
+                    $(this).DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ],
+                        responsive: true,
+                        autoWidth: false
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            initializeDatatables();
+        });
+
+        // Initialize DataTables after Livewire updates DOM elements
+        document.addEventListener('livewire:element.changed', ({ el, component }) => {
+            // Check if the changed element or any of its children contain a datatable (but not timesheet table)
+            if ($(el).find('table.datatable').not('#timesheetTable').length > 0 || ($(el).hasClass('datatable') && !$(el).is('#timesheetTable'))) {
+                // Use a small timeout to ensure the DOM is fully updated
+                setTimeout(() => initializeDatatables(el), 0);
+            }
+        });
+
+        // Initialize DataTables after Livewire navigations (for full page visits)
+        document.addEventListener('livewire:navigated', function () {
+            initializeDatatables();
+        });
+
+        // Initialize DataTables on initial Livewire load (useful if component loads with the page)
+        document.addEventListener('livewire:init', () => {
+            initializeDatatables();
+        });
+    </script>
+
 </body>
 
 </html>

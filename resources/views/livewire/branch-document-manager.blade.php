@@ -44,31 +44,41 @@
         <!-- Documents List -->
         <div class="mt-6">
             <h3 class="text-lg font-semibold mb-4">Uploaded Documents</h3>
-            <div class="space-y-4">
-                @forelse($documents as $document)
-                    <div class="flex items-center justify-between p-4 border rounded-lg">
-                        <div>
-                            <span class="font-medium">{{ $document->file_name }}</span>
-                            <span class="text-sm text-gray-500 ml-2">
-                                ({{ number_format($document->size / 1024, 2) }} KB)
-                            </span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button wire:click="downloadPdf({{ $document->id }})"
-                                    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
-                                Download
-                            </button>
-                            <button wire:click="deleteDocument({{ $document->id }})"
-                                    wire:confirm="Are you sure you want to delete this document?"
-                                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-gray-500">No documents uploaded yet.</p>
-                @endforelse
+            <div class="table-responsive">
+                <table id="documentsTable" class="table table-hover table-bordered datatable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>File Name</th>
+                            <th>Size (KB)</th>
+                            <th>Upload Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($documents as $document)
+                            <tr wire:key="document-{{ $document->id }}">
+                                <td>{{ $document->file_name }}</td>
+                                <td>{{ number_format($document->size / 1024, 2) }}</td>
+                                <td>{{ $document->created_at->format('Y-m-d H:i:s') }}</td>
+                                <td class="flex gap-2">
+                                    <button wire:click="downloadPdf({{ $document->id }})"
+                                            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                        Download
+                                    </button>
+                                    <button wire:click="deleteDocument({{ $document->id }})"
+                                            wire:confirm="Are you sure you want to delete this document?"
+                                            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-gray-500">No documents uploaded yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
+        </div>    </div>
 </div>

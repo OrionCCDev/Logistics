@@ -37,7 +37,7 @@
                     </form>
 
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table id="vehiclesTable" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>Supplier</th>
@@ -131,3 +131,85 @@
     <span class="btn-text">New Vehicle</span>
 </a>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#vehiclesTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Exclude the last column
+                    },
+                    text: 'Copy' // Keep original text for script to identify
+                },
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Exclude the last column
+                    },
+                    text: 'CSV' // Keep original text for script to identify
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Exclude the last column
+                    },
+                    text: 'Excel' // Keep original text for script to identify
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Exclude the last column
+                    },
+                    text: 'PDF' // Keep original text for script to identify
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Exclude the last column
+                    },
+                    text: 'Print' // Keep original text for script to identify
+                }
+            ],
+            // Add options here if needed
+        });
+
+        // Apply Bootstrap button classes and icons to the generated buttons
+        $('#vehiclesTable').closest('.dataTables_wrapper').find('.dt-buttons .dt-button').each(function() {
+            // Remove any existing inline styles or default classes
+            $(this).removeAttr('style').removeClass('btn btn-secondary btn-info btn-success btn-danger btn-primary');
+
+            // Get the button text to determine type
+            const buttonText = $(this).find('span').text();
+            let buttonClass = 'btn ';
+            let iconHtml = '';
+
+            if (buttonText === 'Copy') {
+                buttonClass += 'btn-secondary';
+                iconHtml = '<i class="fas fa-copy"></i> ';
+            } else if (buttonText === 'CSV') {
+                buttonClass += 'btn-info';
+                iconHtml = '<i class="fas fa-file-csv"></i> ';
+            } else if (buttonText === 'Excel') {
+                buttonClass += 'btn-success';
+                iconHtml = '<i class="fas fa-file-excel"></i> ';
+            } else if (buttonText === 'PDF') {
+                buttonClass += 'btn-danger';
+                iconHtml = '<i class="fas fa-file-pdf"></i> ';
+            } else if (buttonText === 'Print') {
+                buttonClass += 'btn-primary';
+                iconHtml = '<i class="fas fa-print"></i> ';
+            }
+
+            // Add the determined Bootstrap classes
+            $(this).addClass(buttonClass);
+
+            // Prepend the icon to the button text
+            $(this).find('span').prepend(iconHtml);
+        });
+    });
+</script>
+@endpush

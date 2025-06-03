@@ -1,27 +1,28 @@
 <?php
 
+use App\Models\Project;
+use App\Models\Vehicle;
+use App\Models\Operator;
+use App\Livewire\ReportsPage;
+use App\Models\TimesheetDaily;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CompareController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OperatorController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\AnalyticsController;
+use App\Livewire\ProjectVehicleTimesheetTable;
+use App\Http\Controllers\ProjectVehicleController;
 use App\Http\Controllers\TimesheetDailyController;
 use App\Http\Controllers\VehicleTimesheetController;
-use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\ProjectVehicleController;
-use App\Models\Project;
-use App\Models\Vehicle;
-use App\Models\Operator;
-use App\Models\TimesheetDaily;
-use App\Livewire\ReportsPage;
-use App\Livewire\ProjectVehicleTimesheetTable;
-use App\Http\Controllers\CompareController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
@@ -59,8 +60,13 @@ Route::middleware('auth')->group(function () {
             Route::post('vehicles/{vehicle}/timesheets', [VehicleTimesheetController::class, 'storeForVehicle'])->name('timesheets.storeForVehicle');
 
             Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
-            Route::get('reports', [App\Http\Controllers\ReportsController::class, 'index'])->name('reports.index');
-            Route::get('projects/{project}/timesheets', [App\Http\Controllers\ProjectController::class, 'projectTimesheets'])->name('projects.timesheets');
+                    Route::prefix('reports')->name('reports.')->group(function () {
+                        Route::get('/', [ReportsController::class, 'index'])->name('index');
+                        Route::get('/timesheet', [ReportsController::class, 'timesheetReport'])->name('timesheet');
+                        Route::get('/vehicle-utilization', [ReportsController::class, 'vehicleUtilization'])->name('vehicle-utilization');
+                        Route::get('/project-summary', [ReportsController::class, 'projectSummary'])->name('project-summary');
+                        Route::get('/fuel-consumption', [ReportsController::class, 'fuelConsumption'])->name('fuel-consumption');
+                    });            Route::get('projects/{project}/timesheets', [App\Http\Controllers\ProjectController::class, 'projectTimesheets'])->name('projects.timesheets');
 
             // Compare Reports Routes
             Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
