@@ -294,94 +294,38 @@ class ReportsController extends Controller
     public function projectSummary(Request $request)
     {
         try {
-
-
-
-
-
-
-
-
-
-
-
-
-
-            $query = TimesheetDaily::query();
+            $query = TimesheetDaily::with([
+                'project:id,name',
+                'vehicle:id,plate_number',
+                'vehicle.supplier:id,name',
+                'user:id,name,email'
+            ]);
 
             // Apply filters
+            if ($request->filled('project_id')) {
+                $query->where('project_id', $request->project_id);
+                $selectedProject = Project::find($request->project_id);
+                $projectName = $selectedProject ? $selectedProject->name : 'All Projects';
+            } else {
+                $projectName = 'All Projects';
+            }
+
             if ($request->filled('date_from')) {
                 $query->where('date', '>=', $request->date_from);
             }
-
 
             if ($request->filled('date_to')) {
                 $query->where('date', '<=', $request->date_to);
             }
 
+            // Get filtered data
+            $timesheets = $query->orderBy('date', 'desc')->get();
 
-            if ($request->filled('project_id')) {
-                $query->where('project_id', $request->project_id);
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // Get project statistics
-            $projectStats = $query->select([
-                'project_id',
-                DB::raw('SUM(working_hours) as total_hours'),
-                DB::raw('SUM(fuel_consumption) as total_fuel'),
-                DB::raw('COUNT(DISTINCT vehicle_id) as vehicles_used'),
-                DB::raw('COUNT(DISTINCT user_id) as users_involved'),
-                DB::raw('COUNT(*) as total_entries'),
-                DB::raw('AVG(working_hours) as avg_hours_per_entry'),
-                DB::raw('AVG(fuel_consumption) as avg_fuel_per_entry'),
-                DB::raw('MIN(date) as start_date'),
-                DB::raw('MAX(date) as end_date')
-            ])
-                ->groupBy('project_id')
-                ->get()
-                ->map(function($stat) {
-                    $project = Project::find($stat->project_id);
-                    if ($project) {
-                        $stat->project_name = $project->name ?? 'N/A';
-                        $stat->avg_efficiency = $stat->total_hours > 0 ? $stat->total_fuel / $stat->total_hours : 0;
-
-                        // Calculate project duration in days
-                        if ($stat->start_date && $stat->end_date) {
-                            $stat->duration_days = Carbon::parse($stat->start_date)->diffInDays(Carbon::parse($stat->end_date)) + 1;
-                            $stat->avg_hours_per_day = $stat->duration_days > 0 ? $stat->total_hours / $stat->duration_days : 0;
-                        } else {
-                            $stat->duration_days = 0;
-                            $stat->avg_hours_per_day = 0;
-                        }
-                    } else {
-                        $stat->project_name = 'N/A';
-                        $stat->avg_efficiency = 0;
-                        $stat->duration_days = 0;
-                        $stat->avg_hours_per_day = 0;
-                    }
-                    return $stat;
-                })
-                ->sortByDesc('total_hours');
-
+            // Get projects for the filter dropdown
             $projects = Project::select('id', 'name')->orderBy('name')->get();
 
-            return view('reports.project-summary', compact('projectStats', 'projects'));
+            return view('reports.project-summary', compact('timesheets', 'projects', 'projectName'));
+
         } catch (\Exception $e) {
             return back()->with('error', 'Error loading project summary report: ' . $e->getMessage());
         }
