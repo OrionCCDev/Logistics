@@ -190,16 +190,6 @@
                     }
                 }
             ],
-            columns: [
-                { data: null }, // Date
-                { data: null }, // Project
-                { data: null }, // Vehicle
-                { data: null }, // Work Hours
-                { data: null }, // Fuel Consumption
-                { data: null }, // Average
-                { data: null }, // Remarks
-                // Actions column handled implicitly or by exportOptions
-            ],
             // Add options here if needed
         });
 
